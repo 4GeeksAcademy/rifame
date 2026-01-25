@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+
 export const Navbar = () => {
 
 	return (
@@ -7,7 +8,7 @@ export const Navbar = () => {
 			<div className="container">
 				<Link to="/" className="d-flex align-items-center text-decoration-none">
 					<img 
-						src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoF4lsL_KPwlVij0JCLLerJVnMH2Dok1Nsrw&s" 
+						src="src/front/assets/img/MagicEraser_260125_114439.PNG" 
 						alt="Logo" 
 						width="50" 
 						height="50" 
