@@ -1,11 +1,14 @@
 export const Footer = () => (
-	<footer className="footer mt-auto py-3 text-center">
-		<p>
-			Check the <a target="_blank" href="https://4geeks.com/docs/start/react-flask-template">template documentation</a> <i className="fa-solid fa-file"></i> for help.
+	<footer className="footer mt-auto py-3 bg-light row justify-content-between text-center text-muted px-5">
+		<p className="col-4">
+			© 2026 <strong>Rifame</strong>. Todos los derechos reservados.
 		</p>
-		<p>
-			Made with <i className="fa fa-heart text-danger" /> by{" "}
-			<a href="http://www.4geeksacademy.com">4Geeks Academy</a>
+		<p className="col-4">
+			Desarrollado por <strong>Rifame Team</strong>.
 		</p>
+		<p className="col-4">
+			<a href="#">Privacidad</a> | <a href="#">Términos</a> | <a href="#">Contacto</a>
+		</p>
+		
 	</footer>
 );
