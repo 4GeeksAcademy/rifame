@@ -36,10 +36,18 @@ export const Navbar = () => {
 								Inicio
 							</a>
 							<ul className="dropdown-menu fs-small">
-								<li><a className="dropdown-item" href="#">Acerca de RIFAME</a></li>
-								<li><a className="dropdown-item" href="#">Preguntas Frecuentes</a></li>
-								<li><a className="dropdown-item" href="#">Crear una Pagina</a></li>
-								<li><a className="dropdown-item" href="#">Centro de Ayuda</a></li>
+								<li>
+									<a className="dropdown-item" href="#scrollspyHeading1">Acerca de RIFAME</a>
+								</li>
+								<li>
+									<a className="dropdown-item" href="#scrollspyHeading2">Preguntas Frecuentes</a>
+								</li>
+								<li>
+									<a className="dropdown-item" href="#">Crear una Pagina</a>
+								</li>
+								<li>
+									<a className="dropdown-item" href="#">Centro de Ayuda</a>
+								</li>
 							</ul>
 						</li>
 						<li className="nav-item">
