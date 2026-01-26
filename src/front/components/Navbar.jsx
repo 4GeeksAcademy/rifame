@@ -46,7 +46,7 @@ export const Navbar = () => {
 									<a className="dropdown-item" href="#scrollspyHeading3">Plataforma Completa</a>
 								</li>
 								<li>
-									<a className="dropdown-item" href="#scrollspyHeading4">Centro de Ayuda</a>
+									<a className="dropdown-item" href="#scrollspyHeading4">Promociones</a>
 								</li>
 							</ul>
 						</li>

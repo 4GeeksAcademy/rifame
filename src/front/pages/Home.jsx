@@ -129,7 +129,8 @@ export const Home = () => {
 					/>
 				</div>
 			</section>
-			<section id="scrollspyHeading4">
+			<section
+				id="scrollspyHeading4">
 				<div className="container my-5 p-5 rounded-4 bg-body-tertiary">
 					<div className="d-flex justify-content-center m-auto">
 					<h2 className="text-center m-0 me-5" style={{color:"#d90429", fontWeight:"bold"}}>Suscríbase para Recibir Promociones</h2>
@@ -140,8 +141,6 @@ export const Home = () => {
 					</div>
 				</div>
 			</section>
-
-
 		</div>
 	);
 }; 
