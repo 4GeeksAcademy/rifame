@@ -60,7 +60,7 @@ export const Navbar = () => {
 							<a className="nav-link" aria-current="page" href="#">Configuraciones</a>
 						</li>
 						<li className="nav-item">
-							<a className="nav-link" aria-current="page" href="#">Precios</a>
+							<Link className="nav-link text-white bg-danger rounded-5 mx-2 px-3" to="/crear-rifa">Crear Rifa</Link>
 						</li>
 					</ul>
 				</div>
