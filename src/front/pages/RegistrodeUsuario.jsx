@@ -49,4 +49,5 @@ const RegistrodeUsuario = () => {
         </div>
     );
 }
+
 export default RegistrodeUsuario;

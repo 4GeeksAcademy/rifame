@@ -11,6 +11,7 @@ import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
 import CrearRifa from "./pages/CrearRifa";
 import RegistrodeUsuario from "./pages/RegistrodeUsuario.jsx";
+import SistemaPagina from "./pages/SistemaPagina.jsx";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -29,6 +30,7 @@ export const router = createBrowserRouter(
         <Route path="/demo" element={<Demo />} />
         <Route path="/crear-rifa" element={<CrearRifa />} />
         <Route path="/registro-usuario" element={<RegistrodeUsuario />} />
+        <Route path="/sistema-pagina" element={<SistemaPagina />} />
       </Route>
     )
 );
