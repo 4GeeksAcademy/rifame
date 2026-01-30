@@ -1,10 +1,13 @@
+import { Link } from "react-router-dom";
 
 const CrearRifa = () => {
 
     return (
         <div>
             <div className="container mt-5">
-                <h1 className="text-center text-danger text-bold" style={{fontSize:"60px"}} >Crear Rifa</h1>
+                <button type="button" className="btn btn-link mb-3 d-flex">
+                    <Link to="/" className="text-danger fs-3"><i className="fa-solid fa-angle-left"></i></Link>
+                </button>                <h1 className="text-center text-danger text-bold" style={{fontSize:"60px"}} >Crear Rifa</h1>
                 <form className="mt-4 col-6 m-auto">
                     <div className="mb-3">
                         <label htmlFor="tituloRifa" className="form-label">Título de la Rifa</label>

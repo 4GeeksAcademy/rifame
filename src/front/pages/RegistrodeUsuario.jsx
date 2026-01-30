@@ -4,7 +4,9 @@ const RegistrodeUsuario = () => {
     return (
         <div>
             <div className="container mt-5">
-                <h1 className="text-center text-danger text-bold" style={{fontSize:"60px"}} >Registro de Usuario</h1>
+                <button type="button" className="btn btn-link mb-3 d-flex">
+                    <Link to="/" className="text-danger fs-3"><i className="fa-solid fa-angle-left"></i></Link>
+                </button>                <h1 className="text-center text-danger text-bold" style={{fontSize:"60px"}} >Registro de Usuario</h1>
                 <form className="mx-auto col-6 mt-4">
                     <div className="mb-3 row">
                         <div className="col">
@@ -23,7 +25,7 @@ const RegistrodeUsuario = () => {
                         <input type="email" className="form-control" id="email" name="email" required/>
                         <div className="invalid-feedback">Por favor ingresa un correo electrónico válido.</div>
                     </div>
-                    <div>
+                    <div className="mb-3">
                         <label htmlFor="telefono" className="form-label">Teléfono</label>
                         <input type="tel" className="form-control" id="telefono" name="telefono" required/>
                         <div className="invalid-feedback">Por favor ingresa tu número de teléfono.</div>
@@ -33,7 +35,7 @@ const RegistrodeUsuario = () => {
                         <input type="password" className="form-control" id="password" name="password" required/>
                         <div className="invalid-feedback">Por favor ingresa una contraseña.</div>
                     </div>
-                    <div>
+                    <div className="mb-3">
                         <label htmlFor="confirmarPassword" className="form-label">Confirmar Contraseña</label>
                         <input type="password" className="form-control" id="confirmarPassword" name="confirmarPassword" required/>
                         <div className="invalid-feedback">Las contraseñas no coinciden.</div>
@@ -45,6 +47,9 @@ const RegistrodeUsuario = () => {
                     </div>
                     <button className="btn btn-danger d-flex mx-auto" type="submit">Registrarse</button>
                 </form>
+            </div>
+            <div>
+                <p className="text-center mt-3">¿Ya tienes una cuenta? <Link to="/login" className="text-danger">Inicia sesión aquí</Link></p>
             </div>
         </div>
     );

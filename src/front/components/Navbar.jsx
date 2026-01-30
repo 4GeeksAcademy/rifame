@@ -14,7 +14,12 @@ export const Navbar = () => {
 						height="50" 
 						className="d-inline-block"
 					/>
-					<h1 className="navbar-brand mb-0 ms-2" style={{fontSize:"40px", color:"#d90429"}}>Rifame</h1>
+					<h1
+						className="navbar-brand mb-0 ms-2" 
+						style={{fontSize:"40px", color:"#000000"}}
+					>
+						Rifame<span className="text-danger" style={{fontSize:"40px", color:"#d90429"}}>.</span>
+					</h1>
 				</Link>
 				
 				<button 

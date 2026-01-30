@@ -11,7 +11,9 @@ import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
 import CrearRifa from "./pages/CrearRifa";
 import RegistrodeUsuario from "./pages/RegistrodeUsuario.jsx";
-
+import Login from "./pages/Login.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
+import ComprarTicket from "./pages/ComprarTicket.jsx";
 export const router = createBrowserRouter(
     createRoutesFromElements(
     // CreateRoutesFromElements function allows you to build route elements declaratively.
@@ -29,6 +31,9 @@ export const router = createBrowserRouter(
         <Route path="/demo" element={<Demo />} />
         <Route path="/crear-rifa" element={<CrearRifa />} />
         <Route path="/registro-usuario" element={<RegistrodeUsuario />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/comprar-ticket" element={<ComprarTicket />} />
       </Route>
     )
 );
