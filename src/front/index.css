@@ -20,3 +20,6 @@ footer{
     box-shadow: none;
     border-color: #d90429;
 }
+.hover-container:hover .hover-button {
+    opacity: 0.9 !important;
+}
