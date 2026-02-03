@@ -18,7 +18,7 @@ const Beneficios = () => {
                     <h5 className="text-dark mb-4">Beneficios de nuestro sistema</h5>
                     <div>
                         <p className="ms-4 fs-5 text-danger pb-2 mb-0" >LANDING PAGE</p>
-                        <h2 className="ms-4 mb-4 text-secondary" >Paga Web a medida</h2>
+                        <h2 className="ms-4 mb-4 text-secondary" >Pagina Web Personalizada</h2>
                         <p className="ms-4 text-secondary fs-5" >En tan solo unas horas tendrás tu propia página web lista para empezar a vender tus tickets. 
                             <ul className="ms-3 mt-3">
                                 <li>Con tu Logo</li>
@@ -35,7 +35,7 @@ const Beneficios = () => {
                 </div>                
             </section>
 
-            <section className="container d-flex ps-5 pb-5">
+             <section className="container d-flex ps-5 pb-5">
                 <div>
                     <div>
                         <p className="ms-4 fs-5 text-danger pb-2 mb-0" >RAPIDEZ</p>
@@ -55,6 +55,52 @@ const Beneficios = () => {
                     <h2 className="text-success text-opacity-25">Aquí va la imagen de la sección DE ELEGIBLE</h2>
                 </div>  
             </section>
+
+
+            <section className="container d-flex ps-5 pb-5">
+                <div>
+                    <div>
+                        <p className="ms-4 fs-5 text-danger pb-2 mb-0" >NUMERACION</p>
+                        <h2 className="ms-4 mb-4 text-secondary" >Paginado de Tickets</h2>
+                        <p className="ms-4 text-secondary fs-5" >
+                            El Sistema cuenta con paginado optimizado con carga veloz de tickets para una experiencia óptima para el usuario. 
+                            <ul className="ms-3 mt-3">
+                                <li>Carga Veloz</li>
+                                <li>Paginado Inteligente</li>
+                                <li>Optimizado para Móviles</li>
+                            </ul>                
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 className="text-success text-opacity-25">Aquí va la imagen de la sección DE ELEGIBLE</h2>
+                </div>  
+            </section>
+
+            <section className="container d-flex ps-5 pb-5">
+                <div>
+                    <div>
+                        <p className="ms-4 fs-5 text-danger pb-2 mb-0" >COMPATIBILIDAD</p>
+                        <h2 className="ms-4 mb-4 text-secondary" >Página Adaptable</h2>
+                        <p className="ms-4 text-secondary fs-5" >
+                            Diseñado cuidadosamente para mostrarse perfecto en cada tamaño y tipo de pantalla…
+                            <ul className="ms-3 mt-3">
+                                <li>Computadoras (PCs)</li>
+                                <li>Laptops</li>
+                                <li>Tablets</li>
+                                <li>Celulares</li>
+                            </ul>                
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 className="text-success text-opacity-25">Aquí va la imagen de la sección DE ELEGIBLE</h2>
+                </div>  
+            </section>
+
+           
                 </>
 
                 

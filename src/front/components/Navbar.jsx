@@ -74,7 +74,7 @@ export const Navbar = () => {
 									<a className="dropdown-item" href="scrollspyHeading1">Paginado de Tickets</a>
 								</li>
 								<li>
-									<a className="dropdown-item" href="scrollspyHeading1">Migracion de Datos</a>
+									<a className="dropdown-item" href="scrollspyHeading1">Página Adaptable</a>
 								</li>
 							</ul>
 						</li>
