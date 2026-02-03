@@ -4,11 +4,12 @@ const CrearRifa = () => {
 
     return (
         <div>
-            <div className="container mt-5">
-                <button type="button" className="btn btn-link mb-3 d-flex">
+            <div className="container mt-5 px-3 px-sm-4">
+                <button type="button" className="btn btn-link mb-3 d-flex p-0">
                     <Link to="/" className="text-danger fs-3"><i className="fa-solid fa-angle-left"></i></Link>
-                </button>                <h1 className="text-center text-danger text-bold" style={{fontSize:"60px"}} >Crear Rifa</h1>
-                <form className="mt-4 col-6 m-auto">
+                </button>
+                <h1 className="text-center text-danger text-bold" style={{fontSize: "clamp(32px, 5vw, 60px)"}}>Crear Rifa</h1>
+                <form className="mt-4 mx-auto" style={{maxWidth: "600px"}}>
                     <div className="mb-3">
                         <label htmlFor="tituloRifa" className="form-label">Título de la Rifa</label>
                         <input type="text" className="form-control" id="tituloRifa" placeholder="Ingrese el título de la rifa" />
@@ -50,11 +51,13 @@ const CrearRifa = () => {
                         <label htmlFor="imagenPremio" className="form-label">Imagen del premio</label>
                         <input type="file" className="form-control" id="imagenPremio" />
                     </div>
-                    <button type="submit" className="btn btn-danger m-auto d-flex">Crear Rifa</button>
+                    <div className="d-flex justify-content-center">
+                        <button type="submit" className="btn btn-danger w-100 w-sm-auto px-5">Crear Rifa</button>
+                    </div>
                 </form>
             </div>
-
         </div>
     );
 };
+
 export default CrearRifa;
