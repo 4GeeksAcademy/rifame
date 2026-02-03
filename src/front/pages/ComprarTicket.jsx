@@ -82,6 +82,26 @@ import React, { useState } from 'react';
     
     return (
         <div>
+            <div className="container mt-5 col-10 row mb-4 mx-auto">
+                <div className="col-6 text-center mb-4">
+                    <img 
+                        src="src/front/assets/img/bannerdemoc-12.jpg" 
+                        alt="Banner Comprar Ticket"
+                        className="img-fluid rounded-5" 
+                        style={{boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'}} />
+                </div>
+                <div className="col-6 text-center mb-4">
+                    <div className="d-flex flex-column justify-content-center align-items-start">
+                    <h3 className="text-start text-danger font-bold mt-2 mb-0 fs-3">
+                        <i class="fa-regular fa-calendar-days"></i> 30 JUL 2026 | <i class="fa-solid fa-clock"></i> 8:00 PM 
+                    </h3>
+                    </div>
+                    <h1 className="text-start text-danger fw-bold" style={{fontSize:"48px"}}>Rifa de Verano</h1>
+                    <h3 className="text-start text-danger font-bold mt-2 mb-0 fs-3">
+                        Precio por Ticket: ${tickets[0].precio} | Tickets Disponibles: {tickets.length - ticketsSeleccionados.length}
+                    </h3>
+                </div>
+            </div>
             <div className="container mt-5 col-7" style={{ borderRadius: '18px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
 
                 <h1 className="text-center text-danger fw-bold" style={{ fontSize: "48px" }} >Lista de Ticket</h1>
@@ -273,7 +293,7 @@ import React, { useState } from 'react';
                     </div>
 
                     <div className="text-center my-4">
-                        <h6 className="text-center text-muted ms-4 mb-3">Al confirmar autorizo el uso de <a href="/privacidad">Mis Datos Personales</a></h6>
+                        <h6 className="text-center text-muted ms-4 mb-3">Al confirmar autorizo el uso de Mis Datos Personales</h6>
                         <button className="btn btn-outline-danger btn-lg px-5">
                             Confirmar
                         </button>

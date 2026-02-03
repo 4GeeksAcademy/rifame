@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export const Login = () => {
     return (
         <div>
-            <div className="container mt-5">
+            <div className="container mt-5 px-3 px-sm-4">
                 <button type="button" className="btn btn-link mb-3 d-flex">
                     <Link to="/" className="text-danger fs-3"><i className="fa-solid fa-angle-left"></i></Link>
                 </button>
