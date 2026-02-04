@@ -12,6 +12,10 @@ import { Demo } from "./pages/Demo";
 import CrearRifa from "./pages/CrearRifa";
 import RegistrodeUsuario from "./pages/RegistrodeUsuario.jsx";
 import SistemaPagina from "./pages/SistemaPagina.jsx";
+import Dashboard from "./components/Dashboard.jsx";
+import MisRifas from "./components/MisRifas.jsx";
+import Pagos from "./components/Pagos.jsx";
+
 
 import Beneficios from "./pages/Beneficios.jsx";
 
@@ -44,6 +48,9 @@ export const router = createBrowserRouter(
       <Route path="/comprar-ticket" element={<ComprarTicket />} />
       <Route path="/configuracion" element={<Configuracion />} />
       <Route path="/beneficios" element={<Beneficios />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/mis-rifas" element={<MisRifas />} />
+      <Route path="/pagos" element={<Pagos />} />
     </Route>
   )
 )

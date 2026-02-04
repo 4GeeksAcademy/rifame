@@ -1,9 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 
 export const Login = () => {
-    
     const navigate = useNavigate();
+    const { login } = useAuth(); // Usar la función login del hook
+    
     const [formData, setFormData] = useState({
         email: "",
         contrasena: ""
@@ -37,7 +39,7 @@ export const Login = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("https://effective-couscous-pjq9qjr49xwg3rw55-3001.app.github.dev/api/login", {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -56,15 +58,17 @@ export const Login = () => {
                 return;
             }
 
-            // ✅ GUARDAR EL TOKEN Y LA INFORMACIÓN DEL USUARIO
-            localStorage.setItem("token", data.access_token);
-            localStorage.setItem("user", JSON.stringify(data.user));
+            // ✅ USAR LA FUNCIÓN LOGIN DEL HOOK
+            login(data.access_token, data.user);
 
-            // Opcional: Mostrar mensaje de éxito
+            // Mostrar mensaje de éxito
             console.log("Login exitoso:", data.user);
 
-            // Redirigir al dashboard o página principal
-            navigate("/dashboard"); // Cambia esto a la ruta que necesites
+            // Redirigir al dashboard
+            navigate("/dashboard");
+            
+            // ✅ FORZAR RECARGA PARA ACTUALIZAR EL NAVBAR
+            window.location.reload();
 
         } catch (err) {
             setError("Error de conexión con el servidor.");
@@ -86,7 +90,6 @@ export const Login = () => {
                     Login
                 </h1>
 
-                {/* Mostrar error si existe */}
                 {error && (
                     <div className="alert alert-danger text-center mx-auto mt-3" style={{maxWidth: "500px"}}>
                         {error}

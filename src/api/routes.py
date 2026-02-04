@@ -32,6 +32,7 @@ def reqVal(body, keys):
 # AUTENTICACIÓN
 # ==========================================
 
+
 @api.route("/login", methods=["POST"])
 def login():
     """Endpoint para hacer login y obtener el token JWT"""
@@ -64,6 +65,7 @@ def login():
 # ==========================================
 # USUARIOS
 # ==========================================
+
 
 @api.route('/user', methods=['GET'])
 def get_users():
@@ -160,11 +162,15 @@ def update_user(user_id):
 # ==========================================
 
 @api.route('/rifa/<int:user_id>', methods=['GET'])
-def get_user_rifas(user_id):
-    """Obtener todas las rifas de un usuario"""
-    user = User.query.get(user_id)
-    if user is None:
-        return jsonify({"message": "Usuario no encontrado."}), 404
+@jwt_required()  # Proteger la ruta
+def get_rifas_by_user(user_id):
+    """Obtener todas las rifas de un usuario específico"""
+    current_user_id = get_jwt_identity()
+    
+    # Solo puede ver sus propias rifas
+    if current_user_id != str(user_id):
+        return jsonify({"message": "No autorizado"}), 403
+    
     rifas = Rifa.query.filter_by(user_id=user_id).all()
     rifas = [rifa.serialize() for rifa in rifas]
     return jsonify(rifas), 200
@@ -211,3 +217,73 @@ def crear_rifa():
     db.session.commit()
 
     return jsonify(rifa.serialize()), 201
+
+
+@api.route('/rifa/<int:rifa_id>', methods=['DELETE'])
+@jwt_required()  # Proteger la ruta
+def eliminar_rifa(rifa_id):
+    # Obtener el ID del usuario autenticado del token
+    current_user_id = get_jwt_identity()
+    current_user_id = int(current_user_id)  # Convertir a entero
+    
+    rifa = Rifa.query.get(rifa_id)
+    if rifa is None:
+        return jsonify({"message": "Rifa no encontrada."}), 404
+    
+    # Verificar que el usuario autenticado es el dueño de la rifa
+    if rifa.user_id != current_user_id:
+        return jsonify({"message": "No autorizado"}), 403
+    
+    db.session.delete(rifa)
+    db.session.commit()
+    
+    return jsonify({"message": "Rifa eliminada exitosamente."}), 200
+
+
+@api.route('/rifa/<int:rifa_id>/editar', methods=['PUT'])
+@jwt_required()  # Proteger la ruta
+def editar_rifa(rifa_id):
+    # Obtener el ID del usuario autenticado del token
+    current_user_id = get_jwt_identity()
+    current_user_id = int(current_user_id)  # Convertir a entero
+    rifa = Rifa.query.get(rifa_id)
+    if rifa is None:
+        return jsonify({"message": "Rifa no encontrada."}), 404
+
+    # Verificar que el usuario autenticado es el dueño de la rifa
+    if rifa.user_id != current_user_id:
+        return jsonify({"message": "No autorizado"}), 403
+    body = request.get_json()
+    # Permitir actualización parcial de campos
+    if 'titulo' in body:
+        rifa.titulo = body['titulo']
+    if 'descripcion' in body:
+        rifa.descripcion = body['descripcion']
+    if 'cantidad_tickets' in body:
+        rifa.cantidad_tickets = body['cantidad_tickets']
+    if 'precio_ticket' in body:
+        rifa.precio_ticket = body['precio_ticket']
+    if 'loteria' in body:
+        rifa.loteria = body['loteria']
+    if 'fecha_sorteo' in body:
+        rifa.fecha_sorteo = body['fecha_sorteo']
+    if 'imagen' in body:
+        rifa.imagen = body['imagen']
+    if 'metodo_pagos' in body:
+        rifa.metodo_pagos = body['metodo_pagos']
+    if 'titular_zelle' in body:
+        rifa.titular_zelle = body['titular_zelle']
+    if 'contacto_zelle' in body:
+        rifa.contacto_zelle = body['contacto_zelle']
+    if 'titular_transferencia' in body:
+        rifa.titular_transferencia = body['titular_transferencia']
+    if 'numero_ruta' in body:
+        rifa.numero_ruta = body['numero_ruta']
+    if 'numero_cuenta' in body:
+        rifa.numero_cuenta = body['numero_cuenta']
+
+    db.session.commit()
+    return jsonify(rifa.serialize()), 200
+
+
+# ==========================================

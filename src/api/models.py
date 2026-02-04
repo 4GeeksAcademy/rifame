@@ -51,6 +51,7 @@ class Rifa(db.Model):
             "id": self.id,
             "titulo": self.titulo,
             "descripcion": self.descripcion,
+            "cantidad_tickets": self.cantidad_tickets,
             "precio_ticket": self.precio_ticket,
             "loteria": self.loteria,
             "fecha_sorteo": self.fecha_sorteo,

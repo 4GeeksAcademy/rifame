@@ -12,6 +12,7 @@ from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_jwt_extended import JWTManager
+from datetime import timedelta
 
 # from models import Person
 
@@ -22,7 +23,33 @@ app = Flask(__name__)
 
 
 app.config["JWT_SECRET_KEY"] = os.environ.get('JWT_SECRET')
+if ENV == "development":
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)  # 24 horas
+else:
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=12)  # 12 horas
 jwt = JWTManager(app)
+
+
+@jwt.expired_token_loader
+def expired_token_callback(jwt_header, jwt_payload):
+    return jsonify({
+        'message': 'El token ha expirado. Por favor, inicia sesión nuevamente.',
+        'error': 'token_expired'
+    }), 401
+
+@jwt.invalid_token_loader
+def invalid_token_callback(error):
+    return jsonify({
+        'message': 'Token inválido.',
+        'error': 'invalid_token'
+    }), 401
+
+@jwt.unauthorized_loader
+def missing_token_callback(error):
+    return jsonify({
+        'message': 'Token requerido.',
+        'error': 'authorization_required'
+    }), 401
 
 
 CORS(app)
