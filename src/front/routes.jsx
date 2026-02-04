@@ -13,6 +13,7 @@ import CrearRifa from "./pages/CrearRifa";
 import RegistrodeUsuario from "./pages/RegistrodeUsuario.jsx";
 import SistemaPagina from "./pages/SistemaPagina.jsx";
 import Configuracion from "./pages/Configuracion.jsx";
+import DetalleRifa from "./pages/DetalleRifa.jsx";
 
 import Login from "./pages/Login.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
@@ -41,6 +42,7 @@ export const router = createBrowserRouter(
       <Route path="/comprar-ticket" element={<ComprarTicket />} />
       <Route path="/configuracion" element={<Configuracion />} />
       <Route path="/admin-panel" element={<AdminPanel />} />
+      <Route path="/detalle-rifa" element={<DetalleRifa />} />
     </Route>
   )
 )

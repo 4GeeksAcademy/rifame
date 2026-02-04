@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const AdminPanel = () => {
     return (
             <div className="container my-5">
@@ -48,10 +50,10 @@ const AdminPanel = () => {
                                 </span>
                                  <ul className="list-unstyled small">
                                     <li><strong>Loteria:</strong> Loteria Nacional</li>
-                                    <li><strong>Fecha Sorteo:</strong> 25/12/2026 18:00</li>
+                                    <li><strong>Fecha Sorteo:</strong> 25/02/2026 18:00</li>
                                     <li><strong>Precio Ticket:</strong> $10</li>
-                                    <li><strong>Fecha Conclusión:</strong> 25/12/2026 15:00</li>
-                                    <li><strong>Tickets:</strong> 65/100</li>
+                                    <li><strong>Fecha Conclusión:</strong> 25/03/2026 15:00</li>
+                                    <li><strong>Tickets:</strong> 1/100</li>
                                 </ul>
                                 <div className="mb-3">
                                     <small className="text-muted">
@@ -59,15 +61,15 @@ const AdminPanel = () => {
                                     </small>
                                 <div className="progress">
                                 <div className="progress-bar bg-danger"
-                                    style={{width: "65%"}}>
-                                        65%
+                                    style={{width: "1%"}}>
+                                        1%
                                 </div>
                                 </div>
                                 </div>
                                 <div className="mt-auto d-flex justify-content-center pt-3">
-                                    <button className="btn btn-danger rounded-5 px-4">
+                                    <Link to="/detalle-rifa" className="btn btn-sm btn-outline-danger rounded-5">
                                         Consultar rifa
-                                    </button>
+                                    </Link>
                                 </div>
                         </div>
                     </div>
