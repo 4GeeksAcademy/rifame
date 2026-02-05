@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 const fondo1 = "/red_wavy_with_halftone_background.jpg";
 
 
@@ -13,7 +14,7 @@ const Beneficios = () => {
                     </div>
                 </section>
 
-                <section className="container d-flex ps-5 pb-5">    
+                <section id="pagina-web" className="container d-flex ps-5 pb-5">    
                 <div>
                     <h5 className="text-dark mb-4">Beneficios de nuestro sistema</h5>
                     <div>
@@ -31,7 +32,7 @@ const Beneficios = () => {
                 </div>
 
                  <div>
-                    <h2 className="text-success text-opacity-25">Aquí va la imagen de la sección de configuracines</h2>
+                    <h2 className="text-success text-opacity-25"><img src= "https://images.vexels.com/media/users/3/199980/isolated/preview/4c910ee68a0f4fe8029f72e40bc10fe6-icono-de-navegacion-por-internet-trazo-rosa.png" style={{ width: "100px", height: "100px", color:"#f50b22"}}/></h2>
                 </div>                
             </section>
 
@@ -52,7 +53,7 @@ const Beneficios = () => {
                 </div>
 
                 <div>
-                    <h2 className="text-success text-opacity-25">Aquí va la imagen de la sección DE ELEGIBLE</h2>
+                    <h2 className="text-success text-opacity-25"><img src= "https://media.istockphoto.com/id/1370444281/es/foto/icono-de-reloj-circular-estilizado-alarma-m%C3%ADnima-timbre-del-reloj-icono-de-tiempo-de-velocidad.webp?a=1&b=1&s=612x612&w=0&k=20&c=lDFXw7b8zp1wqp5KjgL83fYY1IfnbR1QoI3mtq5ohRs=" style={{ width: "100px", height: "100px", color:"#f50b22"}}/></h2>
                 </div>  
             </section>
 
@@ -63,7 +64,10 @@ const Beneficios = () => {
                         <p className="ms-4 fs-5 text-danger pb-2 mb-0" >NUMERACION</p>
                         <h2 className="ms-4 mb-4 text-secondary" >Paginado de Tickets</h2>
                         <p className="ms-4 text-secondary fs-5" >
-                            El Sistema cuenta con paginado optimizado con carga veloz de tickets para una experiencia óptima para el usuario. 
+                            El Sistema cuenta con paginado optimizado con carga veloz de tickets 
+                        <p className="ms-4 text-secondary fs-5" >
+                            para una experiencia óptima para el usuario.
+                            </p>    
                             <ul className="ms-3 mt-3">
                                 <li>Carga Veloz</li>
                                 <li>Paginado Inteligente</li>
@@ -74,7 +78,7 @@ const Beneficios = () => {
                 </div>
 
                 <div>
-                    <h2 className="text-success text-opacity-25">Aquí va la imagen de la sección DE ELEGIBLE</h2>
+                     <h2 className="text-success text-opacity-25"><img src= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo70U6Dew7_rwmS22lRXfTAoyWxU1ZIfSMYg&s" style={{ width: "100px", height: "100px", color:"#f50b22"}}/></h2>
                 </div>  
             </section>
 
@@ -96,7 +100,7 @@ const Beneficios = () => {
                 </div>
 
                 <div>
-                    <h2 className="text-success text-opacity-25">Aquí va la imagen de la sección DE ELEGIBLE</h2>
+                   <h2 className="text-success text-opacity-25"><img src= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQn5zYWW9A8bnb84fe3I-rGrF7vHmQWUmDL5g&s" style={{ width: "100px", height: "100px", color:"#f50b22"}}/></h2>
                 </div>  
             </section>
 

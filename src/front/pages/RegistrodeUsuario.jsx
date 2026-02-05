@@ -56,7 +56,7 @@ const RegistrodeUsuario = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("https://effective-couscous-pjq9qjr49xwg3rw55-3001.app.github.dev/api/user", {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
