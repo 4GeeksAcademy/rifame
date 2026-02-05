@@ -85,7 +85,7 @@ const RegistrodeUsuario = () => {
                 localStorage.setItem("user", JSON.stringify(data.user));
                 
                 // Redirigir al dashboard directamente después del registro
-                navigate("/panel-usuario"); // Cambia esto a la ruta que necesites
+                navigate("/dashboard"); // Cambia esto a la ruta que necesites
             } else {
                 // Si el backend no devuelve token, redirigir al login
                 navigate("/login");

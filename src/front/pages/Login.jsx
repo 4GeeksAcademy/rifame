@@ -67,9 +67,6 @@ export const Login = () => {
             // Redirigir al dashboard
             navigate("/dashboard");
             
-            // ✅ FORZAR RECARGA PARA ACTUALIZAR EL NAVBAR
-            window.location.reload();
-
         } catch (err) {
             setError("Error de conexión con el servidor.");
             console.error("Error:", err);

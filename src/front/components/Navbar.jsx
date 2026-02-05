@@ -5,6 +5,7 @@ export const Navbar = () => {
 	const navigate = useNavigate();
 	const { user, isAuthenticated, logout } = useAuth();
 
+	//NO UTILIZAR!!!!
 	const handleLinkClick = () => {
 		const navbarCollapse = document.getElementById('navbarSupportedContent');
 		const navbarToggler = document.querySelector('.navbar-toggler');
@@ -18,8 +19,6 @@ export const Navbar = () => {
 		logout();
 		handleLinkClick();
 		navigate("/");
-		// Forzar recarga para actualizar el estado
-		window.location.reload();
 	};
 
 	// Debug: Ver el estado actual
@@ -60,7 +59,7 @@ export const Navbar = () => {
 				<div className="collapse navbar-collapse" id="navbarSupportedContent">
 					<ul className="navbar-nav ms-auto mb-2 mb-lg-0 fs-6 fs-lg-5">
 						{/* MENÚ CUANDO NO ESTÁ AUTENTICADO */}
-						{!isAuthenticated && (
+						{!user && (
 							<>
 								<li className="nav-item dropdown">
 									<a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -142,7 +141,7 @@ export const Navbar = () => {
 						)}
 
 						{/* MENÚ CUANDO ESTÁ AUTENTICADO */}
-						{isAuthenticated && (
+						{user && (
 							<>
 								{/* Dashboard */}
 								<li className="nav-item">
