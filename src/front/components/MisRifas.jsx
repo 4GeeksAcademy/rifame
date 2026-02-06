@@ -201,11 +201,11 @@ const MisRifas = () => {
                                                     Editar
                                                 </Link>
                                                 <Link
-                                                    to={`/rifa/${rifa.id}/pagos`}
+                                                    to={`/rifa/${rifa.id}/compradores`}
                                                     className="btn btn-outline-success"
                                                 >
-                                                    <i className="fa-solid fa-money-bill me-1"></i>
-                                                    Pagos
+                                                    <i className="fa-solid fa-users me-1"></i>
+                                                    Compradores
                                                 </Link>
                                                 <button
                                                     className="btn btn-outline-danger"

@@ -19,7 +19,7 @@ const SistemaPagina = () => {
                 </div>
                 <div className="col-12 col-lg-6 text-center">
                     <img 
-                        src="src/front/assets/img/MagicEraser_260125_114439.PNG" 
+                        src="https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770358243/MagicEraser_260125_114843_xcld4t.png" 
                         alt="Rifame Logo" 
                         className="img-fluid"
                         style={{filter: "drop-shadow(0px 10px 25px rgba(0, 0, 0, 0.25))", maxWidth: "300px", width: "100%"}}

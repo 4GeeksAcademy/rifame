@@ -2,8 +2,9 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
+import json
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Rifa, Ticket
+from api.models import db, User, Rifa, Ticket, Comprador_ticket
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
@@ -164,6 +165,7 @@ def update_user(user_id):
 # RIFAS
 # ==========================================
 
+
 @api.route('/rifa/<int:user_id>', methods=['GET'])
 @jwt_required()  # Proteger la ruta
 def get_rifas_by_user(user_id):
@@ -222,28 +224,47 @@ def crear_rifa():
     db.session.add(rifa)
     db.session.commit()
 
+    # Crear tickets
+    try:
+        total = int(cantidad_tickets)
+    except (TypeError, ValueError):
+        total = 0
+
+    for i in range(total):
+        ticket = Ticket(
+            rifa_id=rifa.id,
+            numero_ticket=str(i).zfill(3),
+            is_sold=False
+        )
+        db.session.add(ticket)
+
+    db.session.commit()
+
     return jsonify(rifa.serialize()), 201
 
 
 @api.route('/rifa/<int:rifa_id>', methods=['DELETE'])
-@jwt_required()  # Proteger la ruta
+@jwt_required()
 def eliminar_rifa(rifa_id):
-    # Obtener el ID del usuario autenticado del token
     current_user_id = get_jwt_identity()
-    current_user_id = int(current_user_id)  # Convertir a entero
 
-    rifa = Rifa.query.get(rifa_id)
-    if rifa is None:
-        return jsonify({"message": "Rifa no encontrada."}), 404
+    rifa = Rifa.query.filter_by(id=rifa_id, user_id=current_user_id).first()
 
-    # Verificar que el usuario autenticado es el dueño de la rifa
-    if rifa.user_id != current_user_id:
-        return jsonify({"message": "No autorizado"}), 403
+    if not rifa:
+        return jsonify({"message": "Rifa no encontrada o no tienes permiso"}), 404
 
-    db.session.delete(rifa)
-    db.session.commit()
+    try:
+        # 1) Eliminar todos los tickets asociados primero
+        Ticket.query.filter_by(rifa_id=rifa_id).delete()
 
-    return jsonify({"message": "Rifa eliminada exitosamente."}), 200
+        # 2) Ahora eliminar la rifa
+        db.session.delete(rifa)
+        db.session.commit()
+
+        return jsonify({"message": "Rifa eliminada exitosamente"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error al eliminar la rifa", "error": str(e)}), 500
 
 
 @api.route('/rifa/<int:rifa_id>/editar', methods=['PUT'])
@@ -313,31 +334,217 @@ def editar_rifa(rifa_id):
 @api.route('/rifa/publica/<int:rifa_id>', methods=['GET'])
 def get_rifa_publica(rifa_id):
     """Obtener detalles públicos de una rifa (sin autenticación)"""
+    rifa = Rifa.query.get(rifa_id)
+    if not rifa:
+        return jsonify({"message": "Rifa no encontrada"}), 404
+
+    rifa_data = rifa.serialize()
+    # ✅ Asegurar que metodo_pagos se devuelva como string separado por comas
+    return jsonify(rifa_data), 200
+
+
+# ==========================================
+# TICKETS
+# ==========================================
+
+
+@api.route('/ticket/<int:rifa_id>', methods=['GET'])
+def get_tickets_by_rifa(rifa_id):
+    """Obtener todos los tickets de una rifa específica con su estado (sin autenticación)"""
+    tickets = Ticket.query.filter_by(
+        rifa_id=rifa_id).order_by(Ticket.numero_ticket).all()
+
+    resultado = []
+    for ticket in tickets:
+        ticket_data = ticket.serialize()
+
+        # Buscar si tiene un comprador asociado ACTIVO (no rechazado) para obtener el estado
+        comprador = Comprador_ticket.query.filter_by(ticket_id=ticket.id).filter(
+            Comprador_ticket.estado != 'rechazado'
+        ).first()
+
+        if comprador:
+            ticket_data['estado'] = comprador.estado  # pendiente o verificado
+        else:
+            ticket_data['estado'] = 'disponible'  # No tiene comprador activo
+
+        resultado.append(ticket_data)
+
+    return jsonify(resultado), 200
+
+
+@api.route('/compra-ticket', methods=['POST'])
+def comprar_ticket():
+    """Crear una compra de tickets (pendiente de verificación)"""
+    data = request.json or {}
+
+    rifa_id = data.get('rifa_id')
+    nombre_comprador = data.get('nombre')
+    email_comprador = data.get('email')
+    telefono_comprador = data.get('telefono')
+    pais_comprador = data.get('pais')
+    # Corregido: era comprobante_pago
+    comprobante_url = data.get('comprobante_url')
+
+    tickets_seleccionados = data.get('tickets', [])
+    tickets_comprados = []
+
     try:
-        rifa = Rifa.query.get(rifa_id)
+        for numero_ticket in tickets_seleccionados:
+            ticket = Ticket.query.filter_by(
+                rifa_id=rifa_id, numero_ticket=numero_ticket).first()
+            if not ticket:
+                return jsonify({"message": f"El ticket {numero_ticket} no está disponible."}), 404
+            if ticket.is_sold:
+                return jsonify({"message": f"El ticket {numero_ticket} ya fue vendido."}), 409
 
-        if not rifa:
-            return jsonify({"error": "Rifa no encontrada"}), 404
+            nuevo_comprador = Comprador_ticket(
+                ticket_id=ticket.id,
+                nombre_comprador=nombre_comprador,
+                email_comprador=email_comprador,
+                telefono_comprador=telefono_comprador,
+                pais_comprador=pais_comprador,
+                comprobante_pago=comprobante_url,
+                estado='pendiente'  # Estado inicial: pendiente de verificación
+            )
 
-        # Formatear fecha correctamente
-        fecha_sorteo = None
-        if rifa.fecha_sorteo:
-            if isinstance(rifa.fecha_sorteo, str):
-                fecha_sorteo = rifa.fecha_sorteo  # Ya es string
-            else:
-                fecha_sorteo = rifa.fecha_sorteo.isoformat()  # Convertir datetime a string
+            ticket.is_sold = True
+            db.session.add(nuevo_comprador)
+            tickets_comprados.append(ticket.numero_ticket)
 
-        return jsonify({
-            "id": rifa.id,
-            "titulo": rifa.titulo,
-            "descripcion": rifa.descripcion,
-            "imagen": rifa.imagen,
-            "precio_ticket": float(rifa.precio_ticket) if rifa.precio_ticket else 0,
-            "cantidad_tickets": rifa.cantidad_tickets,
-            "fecha_sorteo": fecha_sorteo,
-            "activa": rifa.activa if hasattr(rifa, 'activa') else True
-        }), 200
+        db.session.commit()
+        return jsonify({"message": "Compra realizada exitosamente. Pendiente de verificación.", "tickets_comprados": tickets_comprados}), 200
 
     except Exception as e:
-        print(f"Error en get_rifa_publica: {str(e)}")  # Debug
-        return jsonify({"error": str(e)}), 500
+        db.session.rollback()
+        return jsonify({"message": "Error al procesar la compra", "error": str(e)}), 500
+
+
+# ==========================================
+# GESTIÓN DE COMPRADORES (SOLO DUEÑO DE RIFA)
+# ==========================================
+
+
+@api.route('/rifa/<int:rifa_id>/compradores', methods=['GET'])
+@jwt_required()
+def get_compradores_by_rifa(rifa_id):
+    """Obtener todos los compradores de una rifa (solo el dueño)"""
+    current_user_id = get_jwt_identity()
+    current_user_id = int(current_user_id)
+
+    # Verificar que la rifa existe y pertenece al usuario
+    rifa = Rifa.query.get(rifa_id)
+    if not rifa:
+        return jsonify({"message": "Rifa no encontrada"}), 404
+
+    if rifa.user_id != current_user_id:
+        return jsonify({"message": "No autorizado"}), 403
+
+    # Obtener todos los compradores de tickets de esta rifa
+    compradores = db.session.query(Comprador_ticket).join(Ticket).filter(
+        Ticket.rifa_id == rifa_id
+    ).all()
+
+    # Serializar con información adicional del ticket
+    resultado = []
+    for comprador in compradores:
+        data = comprador.serialize()
+        # Agregar información del ticket
+        ticket = Ticket.query.get(comprador.ticket_id)
+        if ticket:
+            data['numero_ticket'] = ticket.numero_ticket
+        resultado.append(data)
+
+    return jsonify(resultado), 200
+
+
+@api.route('/comprador/<int:comprador_id>', methods=['GET'])
+@jwt_required()
+def get_comprador_detail(comprador_id):
+    """Obtener detalles de un comprador (solo el dueño de la rifa)"""
+    current_user_id = get_jwt_identity()
+    current_user_id = int(current_user_id)
+
+    comprador = Comprador_ticket.query.get(comprador_id)
+    if not comprador:
+        return jsonify({"message": "Comprador no encontrado"}), 404
+
+    # Verificar que el usuario es el dueño de la rifa
+    ticket = Ticket.query.get(comprador.ticket_id)
+    if not ticket:
+        return jsonify({"message": "Ticket no encontrado"}), 404
+
+    rifa = Rifa.query.get(ticket.rifa_id)
+    if not rifa or rifa.user_id != current_user_id:
+        return jsonify({"message": "No autorizado"}), 403
+
+    # Serializar con información adicional
+    data = comprador.serialize()
+    data['numero_ticket'] = ticket.numero_ticket
+    data['rifa_titulo'] = rifa.titulo
+
+    return jsonify(data), 200
+
+
+@api.route('/comprador/<int:comprador_id>/verificar', methods=['PUT'])
+@jwt_required()
+def verificar_comprador(comprador_id):
+    """Verificar un comprador y confirmar la venta del ticket"""
+    current_user_id = get_jwt_identity()
+    current_user_id = int(current_user_id)
+
+    comprador = Comprador_ticket.query.get(comprador_id)
+    if not comprador:
+        return jsonify({"message": "Comprador no encontrado"}), 404
+
+    # Verificar que el usuario es el dueño de la rifa
+    ticket = Ticket.query.get(comprador.ticket_id)
+    if not ticket:
+        return jsonify({"message": "Ticket no encontrado"}), 404
+
+    rifa = Rifa.query.get(ticket.rifa_id)
+    if not rifa or rifa.user_id != current_user_id:
+        return jsonify({"message": "No autorizado"}), 403
+
+    # Cambiar estado a verificado
+    comprador.estado = 'verificado'
+    ticket.is_sold = True  # Confirmar que está vendido
+
+    try:
+        db.session.commit()
+        return jsonify({"message": "Comprador verificado exitosamente", "comprador": comprador.serialize()}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error al verificar comprador", "error": str(e)}), 500
+
+
+@api.route('/comprador/<int:comprador_id>/rechazar', methods=['PUT'])
+@jwt_required()
+def rechazar_comprador(comprador_id):
+    """Rechazar un comprador y liberar el ticket"""
+    current_user_id = get_jwt_identity()
+    current_user_id = int(current_user_id)
+
+    comprador = Comprador_ticket.query.get(comprador_id)
+    if not comprador:
+        return jsonify({"message": "Comprador no encontrado"}), 404
+
+    # Verificar que el usuario es el dueño de la rifa
+    ticket = Ticket.query.get(comprador.ticket_id)
+    if not ticket:
+        return jsonify({"message": "Ticket no encontrado"}), 404
+
+    rifa = Rifa.query.get(ticket.rifa_id)
+    if not rifa or rifa.user_id != current_user_id:
+        return jsonify({"message": "No autorizado"}), 403
+
+    # Cambiar estado a rechazado y liberar ticket
+    comprador.estado = 'rechazado'
+    ticket.is_sold = False  # Liberar el ticket para que pueda venderse de nuevo
+
+    try:
+        db.session.commit()
+        return jsonify({"message": "Comprador rechazado y ticket liberado", "comprador": comprador.serialize()}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error al rechazar comprador", "error": str(e)}), 500
