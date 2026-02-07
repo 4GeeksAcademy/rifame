@@ -14,7 +14,7 @@ export const Navbar = () => {
 	};
 
 	return (
-		<nav className="navbar navbar-expand-lg bg-body-tertiary">
+		<nav className="navbar navbar-expand-lg bg-body-tertiary fixed-top shadow-sm">
 			<div className="container-fluid px-3 px-md-4">
 				<Link to="/" className="d-flex align-items-center text-decoration-none">
 					<img
@@ -79,21 +79,21 @@ export const Navbar = () => {
 									</a>
 									<ul className="dropdown-menu">
 										<li>
-											<Link to="/configuracion" className="dropdown-item">
+											<Link to="/beneficios" className="dropdown-item">
 												Beneficios
 											</Link>
 										</li>
 										<li>
-											<a className="dropdown-item" href="#scrollspyHeading1">Pagina Web Personalizada</a>
+											<a className="dropdown-item" href="#pagina-personalizada">Pagina Web Personalizada</a>
 										</li>
 										<li>
-											<a className="dropdown-item" href="#scrollspyHeading1">Velocidad Garantizada</a>
+											<a className="dropdown-item" href="#velocidad">Velocidad Garantizada</a>
 										</li>
 										<li>
-											<a className="dropdown-item" href="#scrollspyHeading1">Paginado de Tickets</a>
+											<a className="dropdown-item" href="#paginado">Paginado de Tickets</a>
 										</li>
 										<li>
-											<a className="dropdown-item" href="#scrollspyHeading1">Página Adaptable</a>
+											<a className="dropdown-item" href="#adaptable">Página Adaptable</a>
 										</li>
 									</ul>
 								</li>

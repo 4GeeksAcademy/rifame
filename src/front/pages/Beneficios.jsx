@@ -14,7 +14,7 @@ const Beneficios = () => {
                     </div>
                 </section>
 
-                <section id="pagina-web" className="container d-flex ps-5 pb-5">    
+                <section id="pagina-personalizada" className="container d-flex ps-5 pb-5">    
                 <div>
                     <h5 className="text-dark mb-4">Beneficios de nuestro sistema</h5>
                     <div>
@@ -36,7 +36,7 @@ const Beneficios = () => {
                 </div>                
             </section>
 
-             <section className="container d-flex ps-5 pb-5">
+             <section id="velocidad" className="container d-flex ps-5 pb-5">
                 <div>
                     <div>
                         <p className="ms-4 fs-5 text-danger pb-2 mb-0" >RAPIDEZ</p>
@@ -58,7 +58,7 @@ const Beneficios = () => {
             </section>
 
 
-            <section className="container d-flex ps-5 pb-5">
+            <section id="paginado" className="container d-flex ps-5 pb-5">
                 <div>
                     <div>
                         <p className="ms-4 fs-5 text-danger pb-2 mb-0" >NUMERACION</p>
@@ -82,7 +82,7 @@ const Beneficios = () => {
                 </div>  
             </section>
 
-            <section className="container d-flex ps-5 pb-5">
+            <section id="adaptable" className="container d-flex ps-5 pb-5">
                 <div>
                     <div>
                         <p className="ms-4 fs-5 text-danger pb-2 mb-0" >COMPATIBILIDAD</p>

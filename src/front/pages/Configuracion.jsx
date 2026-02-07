@@ -30,7 +30,7 @@ const Configuracion = () => {
                         </div>
                     </div>
                     <div className="col-12 col-lg-4 d-flex align-items-center justify-content-center">
-                        <h2 className="text-success text-opacity-25 text-center"><img src= "https://images.vexels.com/media/users/3/199980/isolated/preview/4c910ee68a0f4fe8029f72e40bc10fe6-icono-de-navegacion-por-internet-trazo-rosa.png" style={{ width: "100px", height: "100px", color:"#f50b22"}}/></h2>
+                        <h2 className="text-success text-opacity-25 text-center">Aquí va la imagen de la sección de configuraciones</h2>
                     </div>
                 </div>                
             </section>
@@ -74,7 +74,7 @@ const Configuracion = () => {
                         </div>
                     </div>
                     <div className="col-12 col-lg-4 d-flex align-items-center justify-content-center">
-                        <h2 className="text-success text-opacity-25 text-center"><img src= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrUcjeTitf3hN9c0y2RGtnTJMSrDTrRmll2A&s" style={{ width: "100px", height: "100px", color:"#f50b22"}}/></h2>
+                        <h2 className="text-success text-opacity-25 text-center">Aquí va la imagen de la sección de AUTOMATICO</h2>
                     </div>
                 </div>  
             </section>
