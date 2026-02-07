@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-const fondo1 = "https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770358857/red_wavy_with_halftone_background_j4ui6q.jpg";
+const fondo1 = "/red_wavy_with_halftone_background.jpg";
 
 
 const Beneficios = () => {
@@ -53,7 +53,7 @@ const Beneficios = () => {
                 </div>
 
                 <div>
-                    <h2 className="text-success text-opacity-25"><img src= "https://media.istockphoto.com/id/1370444281/es/foto/icono-de-reloj-circular-estilizado-alarma-m%C3%ADnima-timbre-del-reloj-icono-de-tiempo-de-velocidad.webp?a=1&b=1&s=612x612&w=0&k=20&c=lDFXw7b8zp1wqp5KjgL83fYY1IfnbR1QoI3mtq5ohRs=" style={{ width: "100px", height: "100px", color:"#f50b22"}}/></h2>
+                    <h2 className="text-success text-opacity-25"><img src= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9kukXqnYsWXB5ckkj25x1tfNYCIQXm9ww6g&s" style={{ width: "100px", height: "100px", color:"#f50b22"}}/></h2>
                 </div>  
             </section>
 
@@ -78,7 +78,7 @@ const Beneficios = () => {
                 </div>
 
                 <div>
-                     <h2 className="text-success text-opacity-25"><img src= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo70U6Dew7_rwmS22lRXfTAoyWxU1ZIfSMYg&s" style={{ width: "100px", height: "100px", color:"#f50b22"}}/></h2>
+                     <h2 className="text-success text-opacity-25"><img src= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ32IilAxAgOnT_fEwtnFxZzDO6_Jvavlg4g&s" style={{ width: "100px", height: "100px", color:"#f50b22"}}/></h2>
                 </div>  
             </section>
 

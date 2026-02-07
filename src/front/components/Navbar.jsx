@@ -79,6 +79,11 @@ export const Navbar = () => {
 									</a>
 									<ul className="dropdown-menu">
 										<li>
+											<Link to="/configuracion" className="dropdown-item">
+												Beneficios
+											</Link>
+										</li>
+										<li>
 											<a className="dropdown-item" href="#scrollspyHeading1">Pagina Web Personalizada</a>
 										</li>
 										<li>
