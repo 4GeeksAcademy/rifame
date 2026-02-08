@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+const API_URL = import.meta.env.VITE_BACKEND_URL;
+
 export const GestionCompradores = () => {
-    const API_URL = import.meta.env.VITE_BACKEND_URL;
+
     const { rifaId } = useParams();
     const navigate = useNavigate();
 
     const [compradores, setCompradores] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [filtroEstado, setFiltroEstado] = useState('todos'); // todos, pendiente, verificado, rechazado
+    const [filtroEstado, setFiltroEstado] = useState('todos');
     const [comprobanteSeleccionado, setComprobanteSeleccionado] = useState(null);
 
     useEffect(() => {
@@ -72,7 +74,7 @@ export const GestionCompradores = () => {
 
             if (response.ok) {
                 alert('Comprador verificado exitosamente');
-                fetchCompradores(); // Recargar la lista
+                fetchCompradores();
             } else {
                 alert('Error al verificar comprador');
             }
@@ -103,7 +105,7 @@ export const GestionCompradores = () => {
 
             if (response.ok) {
                 alert('Comprador rechazado y ticket liberado');
-                fetchCompradores(); // Recargar la lista
+                fetchCompradores();
             } else {
                 alert('Error al rechazar comprador');
             }

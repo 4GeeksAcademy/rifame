@@ -1,14 +1,47 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { getRifas } from "../actions.js";
+
+const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const MisRifas = () => {
 
     const { store, dispatch } = useGlobalReducer();
     const { user, rifas } = store;
 
-    const [filter, setFilter] = useState('todas'); // 'todas', 'activas', 'finalizadas'
+    const [filter, setFilter] = useState('todas');
+
+
+    const getRifas = async (dispatch, userId, token) => {
+      try {
+        const response = await fetch(`${API_URL}/api/rifa/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+    
+          dispatch({
+            type: "set_rifas",
+            payload: data,
+          });
+    
+          return { success: true, data };
+        }
+    
+        if (response.status === 401) {
+          dispatch({ type: "logout" });
+          return { success: false, message: "Sesión expirada", expired: true };
+        }
+    
+        return { success: false, message: "Error al obtener rifas" };
+      } catch (error) {
+        console.error("Error:", error);
+        return { success: false, message: "Error de conexión" };
+      }
+    };
 
     useEffect(() => {
         if (user && user.id) {
@@ -16,13 +49,13 @@ const MisRifas = () => {
         }
     }, [user]);
 
-    const handleDeleteRifa = async (rifaId) => {
+    const deleteRifa = async (rifaId) => {
         if (!confirm("¿Estás seguro de que deseas eliminar esta rifa? Esta acción no se puede deshacer.")) {
             return;
         }
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/rifa/${rifaId}`, {
+            const response = await fetch(`${API_URL}/api/rifa/${rifaId}`, {
                 method: "DELETE",
                 headers: {
                     "Authorization": `Bearer ${store.token}`
@@ -33,7 +66,6 @@ const MisRifas = () => {
                 throw new Error("Error al eliminar la rifa");
             }
 
-            // Actualizar el estado global
             dispatch({
                 type: 'delete_rifa',
                 payload: rifaId
@@ -49,14 +81,15 @@ const MisRifas = () => {
         if (filter === 'activas') {
             return new Date(rifa.fecha_sorteo) > new Date();
         } else if (filter === 'finalizadas') {
+            
             return new Date(rifa.fecha_sorteo) <= new Date();
         }
-        return true; // 'todas'
+        return true;
     });
 
     return (
         <div className="container mt-4">
-            {/* Header */}
+
             <div className="row mb-4">
                 <div className="col-12">
                     <div className="d-flex justify-content-between align-items-center">
@@ -72,7 +105,6 @@ const MisRifas = () => {
                 </div>
             </div>
 
-            {/* Filtros */}
             <div className="row mb-4">
                 <div className="col-12">
                     <div className="btn-group" role="group">
@@ -101,7 +133,6 @@ const MisRifas = () => {
                 </div>
             </div>
 
-            {/* Lista de Rifas */}
             {filteredRifas.length === 0 ? (
                 <div className="row">
                     <div className="col-12">
@@ -126,14 +157,13 @@ const MisRifas = () => {
                     </div>
                 </div>
             ) : (
-                <div className="row g-3">
+                <div className="row g-3 mb-4">
                     {filteredRifas.map(rifa => {
                         const activa = new Date(rifa.fecha_sorteo) > new Date();
 
                         return (
                             <div key={rifa.id} className="col-md-6 col-lg-4">
                                 <div className="card h-100 shadow-sm border-0">
-                                    {/* Imagen */}
                                     <img
                                         src={rifa.imagen || "https://via.placeholder.com/400x300"}
                                         className="card-img-top"
@@ -141,7 +171,6 @@ const MisRifas = () => {
                                         style={{ height: "200px", objectFit: "cover" }}
                                     />
 
-                                    {/* Badge de estado */}
                                     <span
                                         className={`badge position-absolute top-0 end-0 m-2 ${activa ? 'bg-success' : 'bg-secondary'}`}
                                     >
@@ -174,7 +203,6 @@ const MisRifas = () => {
                                             </div>
                                         </div>
 
-                                        {/* Botones de acción */}
                                         <div className="d-grid gap-2">
                                             <Link
                                                 to={`/rifa/${rifa.id}`}
@@ -209,7 +237,7 @@ const MisRifas = () => {
                                                 </Link>
                                                 <button
                                                     className="btn btn-outline-danger"
-                                                    onClick={() => handleDeleteRifa(rifa.id)}
+                                                    onClick={() => deleteRifa(rifa.id)}
                                                 >
                                                     <i className="fa-solid fa-trash"></i>
                                                 </button>

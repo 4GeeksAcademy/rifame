@@ -206,7 +206,7 @@ def crear_rifa():
 
     # AHORA SÍ crear el objeto Rifa
     rifa = Rifa()
-    rifa.user_id = current_user_id  # ✅ Ahora sí existe rifa
+    rifa.user_id = current_user_id
     rifa.titulo = titulo
     rifa.descripcion = descripcion
     rifa.cantidad_tickets = cantidad_tickets
@@ -339,7 +339,6 @@ def get_rifa_publica(rifa_id):
         return jsonify({"message": "Rifa no encontrada"}), 404
 
     rifa_data = rifa.serialize()
-    # ✅ Asegurar que metodo_pagos se devuelva como string separado por comas
     return jsonify(rifa_data), 200
 
 
@@ -383,19 +382,27 @@ def comprar_ticket():
     email_comprador = data.get('email')
     telefono_comprador = data.get('telefono')
     pais_comprador = data.get('pais')
-    # Corregido: era comprobante_pago
     comprobante_url = data.get('comprobante_url')
+    total_monto = data.get('total', 0)
 
     tickets_seleccionados = data.get('tickets', [])
     tickets_comprados = []
 
     try:
+        # Verificar que la rifa existe
+        rifa = Rifa.query.get(rifa_id)
+        if not rifa:
+            return jsonify({"message": "Rifa no encontrada"}), 404
+
+        # Procesar cada ticket
         for numero_ticket in tickets_seleccionados:
             ticket = Ticket.query.filter_by(
                 rifa_id=rifa_id, numero_ticket=numero_ticket).first()
             if not ticket:
+                db.session.rollback()
                 return jsonify({"message": f"El ticket {numero_ticket} no está disponible."}), 404
             if ticket.is_sold:
+                db.session.rollback()
                 return jsonify({"message": f"El ticket {numero_ticket} ya fue vendido."}), 409
 
             nuevo_comprador = Comprador_ticket(
@@ -405,7 +412,7 @@ def comprar_ticket():
                 telefono_comprador=telefono_comprador,
                 pais_comprador=pais_comprador,
                 comprobante_pago=comprobante_url,
-                estado='pendiente'  # Estado inicial: pendiente de verificación
+                estado='pendiente'
             )
 
             ticket.is_sold = True
@@ -421,7 +428,7 @@ def comprar_ticket():
 
 
 # ==========================================
-# GESTIÓN DE COMPRADORES (SOLO DUEÑO DE RIFA)
+# GESTION DE COMPRADORES (SOLO DUEÑO DE RIFA)
 # ==========================================
 
 

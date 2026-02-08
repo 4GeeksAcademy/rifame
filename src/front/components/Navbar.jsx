@@ -1,12 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import  useGlobalReducer from "../hooks/useGlobalReducer";
-import { logout } from "../actions.js";
 
 export const Navbar = () => {
 
 	const navigate = useNavigate();
 
 	const { store, dispatch } = useGlobalReducer();
+
+	const logout = (dispatch) => {
+	dispatch({ type: "logout" });
+	};
 
 	const handleLogout = () => {
 		logout(dispatch);
@@ -46,7 +49,7 @@ export const Navbar = () => {
 
 				<div className="collapse navbar-collapse" id="navbarSupportedContent">
 					<ul className="navbar-nav ms-auto mb-2 mb-lg-0 fs-6 fs-lg-5">
-						{/* MENÚ CUANDO NO ESTÁ AUTENTICADO */}
+						{/* no autenticado */}
 						{!store.user && (
 							<>
 								<li className="nav-item dropdown">
@@ -127,7 +130,7 @@ export const Navbar = () => {
 							</>
 						)}
 
-						{/* MENÚ CUANDO ESTÁ AUTENTICADO */}
+						{/* autenticado */}
 						{store.user && (
 							<>
 								<li className="nav-item">

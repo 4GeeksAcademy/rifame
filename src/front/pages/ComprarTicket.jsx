@@ -21,7 +21,7 @@ export const ComprarTicket = () => {
     const [busqueda, setBusqueda] = useState('');
     const [ticketEncontrado, setTicketEncontrado] = useState(null);
     const [ultimaActualizacion, setUltimaActualizacion] = useState(null);
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null); // ✅ AGREGAR ESTA LÍNEA
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
     const pollingIntervalRef = useRef(null);
 
@@ -632,7 +632,6 @@ export const ComprarTicket = () => {
                                         {rifa.metodo_pagos.split(',').map((metodo, index) => {
                                             const metodoPago = metodo.trim();
 
-                                            // ✅ Zelle
                                             if (metodoPago === 'ZELLE' && rifa.titular_zelle && rifa.contacto_zelle) {
                                                 return (
                                                     <button
@@ -670,7 +669,6 @@ export const ComprarTicket = () => {
                                                 );
                                             }
 
-                                            // ✅ Transferencia Bancaria
                                             if (metodoPago === 'Transferencia-Bancaria' && rifa.titular_transferencia &&
                                                 rifa.numero_ruta && rifa.numero_cuenta) {
                                                 return (
@@ -721,7 +719,6 @@ export const ComprarTicket = () => {
                                 )}
                             </div>
 
-                            {/* ✅ Modal Mejorado */}
                             {selectedPaymentMethod && (
                                 <div
                                     className="modal fade show d-block"
@@ -751,7 +748,6 @@ export const ComprarTicket = () => {
                                                 ></button>
                                             </div>
 
-                                            {/* Body */}
                                             <div className="modal-body p-4">
                                                 {selectedPaymentMethod.tipo === 'ZELLE' ? (
                                                     <div className="row g-3">
@@ -783,7 +779,6 @@ export const ComprarTicket = () => {
                                                             </div>
                                                         </div>
 
-                                                        {/* Contacto */}
                                                         <div className="col-12">
                                                             <div
                                                                 className="card border-light bg-light cursor-pointer"
@@ -811,7 +806,6 @@ export const ComprarTicket = () => {
                                                             </div>
                                                         </div>
 
-                                                        {/* Info Helper */}
                                                         <div className="col-12">
                                                             <div className="alert alert-info border-0 bg-light-info text-info" role="alert">
                                                                 <i className="fa-solid fa-circle-info me-2"></i>
@@ -821,7 +815,6 @@ export const ComprarTicket = () => {
                                                     </div>
                                                 ) : (
                                                     <div className="row g-3">
-                                                        {/* Titular */}
                                                         <div className="col-12">
                                                             <div
                                                                 className="card border-light bg-light cursor-pointer"
@@ -849,7 +842,6 @@ export const ComprarTicket = () => {
                                                             </div>
                                                         </div>
 
-                                                        {/* Número de Ruta */}
                                                         <div className="col-12">
                                                             <div
                                                                 className="card border-light bg-light cursor-pointer"
@@ -877,7 +869,6 @@ export const ComprarTicket = () => {
                                                             </div>
                                                         </div>
 
-                                                        {/* Número de Cuenta */}
                                                         <div className="col-12">
                                                             <div
                                                                 className="card border-light bg-light cursor-pointer"
@@ -905,7 +896,6 @@ export const ComprarTicket = () => {
                                                             </div>
                                                         </div>
 
-                                                        {/* Info Helper */}
                                                         <div className="col-12">
                                                             <div className="alert alert-info border-0 bg-light-info text-info" role="alert">
                                                                 <i className="fa-solid fa-circle-info me-2"></i>
@@ -916,7 +906,6 @@ export const ComprarTicket = () => {
                                                 )}
                                             </div>
 
-                                            {/* Footer */}
                                             <div className="modal-footer border-top-0 p-4">
                                                 <button
                                                     type="button"

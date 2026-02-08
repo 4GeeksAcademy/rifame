@@ -1,5 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
+import  useGlobalReducer  from "../hooks/useGlobalReducer";
 import { useState } from "react";
+
+const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const RegistrodeUsuario = () => {
     const navigate = useNavigate();
@@ -14,6 +17,43 @@ const RegistrodeUsuario = () => {
     });
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const { dispatch } = useGlobalReducer();
+
+    const register = async (dispatch, userData) => {
+      try {
+        const response = await fetch(`${API_URL}/api/user`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userData),
+        });
+    
+        const data = await response.json();
+    
+        if (!response.ok) {
+          return {
+            success: false,
+            message: data.message || "Error al registrarse",
+          };
+        }
+    
+        if (data.access_token) {
+          dispatch({
+            type: "login",
+            payload: {
+              user: data.user,
+              token: data.access_token,
+            },
+          });
+        }
+    
+        return { success: true, data };
+      } catch (error) {
+        console.error("Error en registro:", error);
+        return { success: false, message: "Error de conexión con el servidor" };
+      }
+    };
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -27,78 +67,31 @@ const RegistrodeUsuario = () => {
         e.preventDefault();
         setError("");
 
-        // Validaciones
         if (!formData.nombre || !formData.apellido || !formData.email || !formData.telefono || !formData.contrasena || !formData.confirmarContrasena) {
-            setError("Por favor, complete todos los campos.");
+            setError("Por favor, completa todos los campos.");
             return;
         }
-        if (formData.contrasena.length < 6) {
-            setError("La contraseña debe tener al menos 6 caracteres.");
-            return;
-        }
-        if (!/\S+@\S+\.\S+/.test(formData.email)) {
-            setError("Por favor, ingrese un correo electrónico válido.");
-            return;
-        }
-        if (!/^\d{7,15}$/.test(formData.telefono)) {
-            setError("Por favor, ingrese un número de teléfono válido (7-15 dígitos).");
-            return;
-        }
+
         if (formData.contrasena !== formData.confirmarContrasena) {
             setError("Las contraseñas no coinciden.");
             return;
         }
+
         if (!formData.terminos) {
-            setError("Debe aceptar los términos y condiciones.");
+            setError("Debes aceptar los términos y condiciones.");
             return;
         }
 
         setLoading(true);
+        const { success, message } = await register(dispatch, formData);
+        setLoading(false);
 
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    nombre: formData.nombre,
-                    apellido: formData.apellido,
-                    email: formData.email,
-                    telefono: formData.telefono,
-                    contrasena: formData.contrasena
-                })
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                setError(data.message || "Error al registrarse");
-                setLoading(false);
-                return;
-            }
-
-            // ✅ GUARDAR EL TOKEN Y LA INFORMACIÓN DEL USUARIO
-            // El backend ahora devuelve el token automáticamente
-            if (data.access_token) {
-                localStorage.setItem("token", data.access_token);
-                localStorage.setItem("user", JSON.stringify(data.user));
-                
-                // Redirigir al dashboard directamente después del registro
-                navigate("/dashboard"); // Cambia esto a la ruta que necesites
-            } else {
-                // Si el backend no devuelve token, redirigir al login
-                navigate("/login");
-            }
-
-        } catch (err) {
-            setError("Error de conexión con el servidor.");
-            console.error("Error:", err);
-        } finally {
-            setLoading(false);
+        if (success) {
+            navigate("/dashboard");
+        } else {
+            setError(message);
         }
     };
-
     return (
         <div>
             <div className="container mt-5 px-3 px-sm-4">

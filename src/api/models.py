@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -95,7 +96,8 @@ class Comprador_ticket(db.Model):
     pais_comprador: Mapped[str] = mapped_column(String(50), nullable=True)
     telefono_comprador: Mapped[str] = mapped_column(String(20), nullable=True)
     comprobante_pago: Mapped[str] = mapped_column(String(255), nullable=True)
-    estado: Mapped[str] = mapped_column(String(20), default='pendiente', nullable=False)
+    estado: Mapped[str] = mapped_column(
+        String(20), default='pendiente', nullable=False)
 
     def serialize(self):
         return {

@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
+const API_URL = import.meta.env.VITE_BACKEND_URL;
+
 const CrearRifa = () => {
     const navigate = useNavigate();
 
@@ -8,7 +10,7 @@ const CrearRifa = () => {
         tituloRifa: "",
         descripcionRifa: "",
         precioTicket: "",
-        metodoPagos: [], // ✅ Ahora es un array
+        metodoPagos: [],
         cantidadTickets: "",
         loteria: "",
         fechaSorteo: "",
@@ -37,7 +39,6 @@ const CrearRifa = () => {
         });
     };
 
-    // ✅ Nueva función para manejar checkboxes de métodos de pago
     const handleMetodoPagoChange = (metodo) => {
         setFormData(prev => {
             const metodosActuales = prev.metodoPagos;
@@ -122,7 +123,6 @@ const CrearRifa = () => {
         e.preventDefault();
         setError("");
 
-        // Validaciones
         if (!formData.tituloRifa || !formData.descripcionRifa || !formData.precioTicket ||
             formData.metodoPagos.length === 0 || !formData.cantidadTickets || !formData.loteria ||
             !formData.fechaSorteo) {
@@ -135,7 +135,6 @@ const CrearRifa = () => {
             return;
         }
 
-        // ✅ Validar que si seleccionó Zelle, complete los campos
         if (formData.metodoPagos.includes("ZELLE")) {
             if (!formData.titularZelle || !formData.contactoZelle) {
                 setError("Por favor, complete todos los campos de Zelle");
@@ -143,7 +142,6 @@ const CrearRifa = () => {
             }
         }
 
-        // ✅ Validar que si seleccionó Transferencia, complete los campos
         if (formData.metodoPagos.includes("Transferencia-Bancaria")) {
             if (!formData.titularTransferencia || !formData.numeroRuta || !formData.numeroCuenta) {
                 setError("Por favor, complete todos los campos de Transferencia Bancaria");
@@ -173,7 +171,7 @@ const CrearRifa = () => {
                 cantidad_tickets: parseInt(formData.cantidadTickets),
                 loteria: formData.loteria,
                 fecha_sorteo: formData.fechaSorteo,
-                metodo_pagos: formData.metodoPagos.join(','), // ✅ Convertir array a string separado por comas
+                metodo_pagos: formData.metodoPagos.join(','),
                 imagen: imageUrl || null,
                 titular_zelle: formData.metodoPagos.includes("ZELLE") ? formData.titularZelle : null,
                 contacto_zelle: formData.metodoPagos.includes("ZELLE") ? formData.contactoZelle : null,
@@ -182,9 +180,7 @@ const CrearRifa = () => {
                 numero_cuenta: formData.metodoPagos.includes("Transferencia-Bancaria") ? formData.numeroCuenta : null
             };
 
-            console.log("Enviando datos:", requestBody);
-
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/rifa`, {
+            const response = await fetch(`${API_URL}/api/rifa`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -196,7 +192,6 @@ const CrearRifa = () => {
             const data = await response.json();
 
             if (response.ok) {
-                console.log("Rifa creada exitosamente:", data);
                 alert("¡Rifa creada exitosamente!");
                 navigate("/mis-rifas");
             } else {
@@ -348,7 +343,6 @@ const CrearRifa = () => {
                         />
                     </div>
 
-                    {/* ✅ Métodos de Pago con Checkboxes */}
                     <div className="mb-3">
                         <label className="form-label">
                             Métodos de Pago <span className="text-danger">*</span>
@@ -390,7 +384,6 @@ const CrearRifa = () => {
                         )}
                     </div>
 
-                    {/* ✅ Información de Zelle - Solo si está seleccionado */}
                     {formData.metodoPagos.includes("ZELLE") && (
                         <div className="mb-3 p-3 border rounded bg-light">
                             <h5 className="text-danger mb-3">
@@ -432,7 +425,6 @@ const CrearRifa = () => {
                         </div>
                     )}
 
-                    {/* ✅ Información de Transferencia Bancaria - Solo si está seleccionado */}
                     {formData.metodoPagos.includes("Transferencia-Bancaria") && (
                         <div className="mb-3 p-3 border rounded bg-light">
                             <h5 className="text-danger mb-3">
@@ -537,7 +529,7 @@ const CrearRifa = () => {
                     <div className="d-flex justify-content-center">
                         <button
                             type="submit"
-                            className="btn btn-danger w-100 w-sm-auto px-5"
+                            className="btn btn-danger w-100 w-sm-auto px-5 mb-3"
                             disabled={loading || uploading || formData.metodoPagos.length === 0}
                         >
                             {loading ? (
