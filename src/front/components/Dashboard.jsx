@@ -173,7 +173,7 @@ const Dashboard = () => {
                                 </div>
                                 <div className="col-md-3 col-sm-6">
                                     <Link to="/clientes" className="btn btn-outline-success w-100">
-                                        <i className="fa-solid fa-money-bill me-2"></i>
+                                        <i className="fa-solid fa-users me-2"></i>
                                         Ver Mis Clientes
                                     </Link>
                                 </div>
