@@ -3,12 +3,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 export const ComprarTicket = () => {
     const API_URL = import.meta.env.VITE_BACKEND_URL;
-
     const CLOUDINARY_CLOUD_NAME = "dkkkjhhgl";
     const CLOUDINARY_UPLOAD_PRESET = "comprobantes-pagos";
 
     const { rifaId } = useParams();
     const navigate = useNavigate();
+
+    const fileInputRef = useRef(null);
+    const ticketRefs = useRef({});
 
     const [rifa, setRifa] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -120,10 +122,6 @@ export const ComprarTicket = () => {
         return () => clearInterval(pollingIntervalRef.current);
     }, [rifa, rifaId]);
 
-    const actualizarAhora = () => {
-        fetchTickets();
-    };
-
     const elegirASuerte = (total, limite) => {
         const seleccionados = new Set();
         const ticketsDisponibles = tickets.filter(t => t.disponible).map(t => t.numero);
@@ -164,9 +162,8 @@ export const ComprarTicket = () => {
 
         if (ticket) {
             setTicketEncontrado(ticket);
-
             setTimeout(() => {
-                const elemento = document.getElementById(`ticket-${ticket.numero}`);
+                const elemento = ticketRefs.current[ticket.numero];
                 if (elemento) {
                     elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     elemento.style.animation = 'parpadeo 1s ease-in-out 3';
@@ -334,7 +331,7 @@ export const ComprarTicket = () => {
 
     return (
         <div>
-            {/* Banner y detalles de la rifa */}
+            {/* Detalles de la rifa */}
             <div className="container mt-5 px-3 px-md-4 mb-4">
                 <div className="row g-4">
                     <button
@@ -376,11 +373,9 @@ export const ComprarTicket = () => {
                     </div>
                 </div>
             </div>
-
             <div className="container mt-5 px-3 px-md-4 mb-5" style={{ maxWidth: '900px' }}>
                 <div style={{ borderRadius: '18px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', padding: '20px' }}>
                     <h1 className="text-center text-danger fw-bold" style={{ fontSize: "clamp(28px, 5vw, 48px)" }}>Lista de Tickets</h1>
-
                     <div className="text-center mb-4">
                         <div className='d-flex justify-content-center align-items-center gap-2'>
                             <button
@@ -483,7 +478,7 @@ export const ComprarTicket = () => {
                                 <small className="text-muted">Pendiente</small>
                             </div>
                             <div className="d-flex align-items-center gap-1">
-                                <div style={{ width: '20px', height: '20px', backgroundColor: '#dc3545', borderRadius: '4px' }}></div>
+                                <div style={{ width: '20px', height: '20px', backgroundColor: '#dc3545', borderRadius: '4px',opacity: 0.6 }}></div>
                                 <small className="text-muted">Vendido</small>
                             </div>
                             <div className="d-flex align-items-center gap-1">
@@ -492,7 +487,7 @@ export const ComprarTicket = () => {
                             </div>
                         </div>
                     </div>
-
+                    {/* Lista de tickets */}
                     <div className="px-2 px-md-5" style={{ height: '400px', overflowY: 'scroll' }}>
                         <div className='d-flex flex-wrap justify-content-center gap-1'>
                             {tickets.map((ticket) => {
@@ -521,7 +516,7 @@ export const ComprarTicket = () => {
                                 return (
                                     <button
                                         key={ticket.numero}
-                                        id={`ticket-${ticket.numero}`}
+                                        ref={(el) => ticketRefs.current[ticket.numero] = el}
                                         className="btn"
                                         disabled={!ticket.disponible}
                                         onClick={() => seleccionarTicket(ticket.numero)}
@@ -545,7 +540,7 @@ export const ComprarTicket = () => {
                             })}
                         </div>
                     </div>
-
+                    {/* Tickets seleccionados */}
                     <div className="text-center my-4 d-flex flex-column align-items-center">
                         <h3 className="text-center">Seleccionados</h3>
                         <div className="text-center text-danger fw-bold">
@@ -556,7 +551,7 @@ export const ComprarTicket = () => {
                                 {ticketsSeleccionados.map(num => (
                                     <button
                                         key={num}
-                                        className="btn btn-danger rounded-5"
+                                        className="btn btn-outline-danger rounded-5"
                                         style={{ width: '4rem', height: '2rem', fontSize: '12px', fontWeight: 'bold' }}
                                         onClick={() => seleccionarTicket(num)}
                                     >
@@ -566,7 +561,7 @@ export const ComprarTicket = () => {
                             </div>
                         )}
                     </div>
-
+                    {/* Datos personales */}
                     <form onSubmit={handleSubmit}>
                         <div className="px-2 px-md-5 my-4">
                             <div className="mt-4">
@@ -629,7 +624,7 @@ export const ComprarTicket = () => {
                                     </div>
                                 </div>
                             </div>
-
+                            {/* Métodos de pago */}
                             <div className="mt-4">
                                 <h1 className="text-start mb-3 text-danger fw-bold" style={{ fontSize: "clamp(20px, 4vw, 28px)" }}>
                                     <i className="fa-solid fa-credit-card me-2"></i>MÉTODOS DE PAGO
@@ -727,7 +722,7 @@ export const ComprarTicket = () => {
                                     </div>
                                 )}
                             </div>
-
+                            {/* Modal de método de pago */}
                             {selectedPaymentMethod && (
                                 <div
                                     className="modal fade show d-block"
@@ -737,7 +732,6 @@ export const ComprarTicket = () => {
                                 >
                                     <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
                                         <div className="modal-content border-0 rounded-4" style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.2)' }}>
-                                            {/* Header */}
                                             <div className="modal-header border-bottom-0 bg-gradient p-4">
                                                 <div className="d-flex align-items-center gap-2">
                                                     <img
@@ -760,7 +754,6 @@ export const ComprarTicket = () => {
                                             <div className="modal-body p-4">
                                                 {selectedPaymentMethod.tipo === 'ZELLE' ? (
                                                     <div className="row g-3">
-                                                        {/* Titular */}
                                                         <div className="col-12">
                                                             <div
                                                                 className="card border-light bg-light cursor-pointer"
@@ -818,7 +811,7 @@ export const ComprarTicket = () => {
                                                         <div className="col-12">
                                                             <div className="alert alert-info border-0 bg-light-info text-info" role="alert">
                                                                 <i className="fa-solid fa-circle-info me-2"></i>
-                                                                <small>Copia esta información y realiza la transferencia por Zelle</small>
+                                                                <small>Copia esta información y realiza el pago por Zelle</small>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -929,7 +922,7 @@ export const ComprarTicket = () => {
                                     </div>
                                 </div>
                             )}
-
+                            {/*comprobante de pago */}
                             <div className="text-center my-4">
                                 <h1 className="text-start mb-3 text-danger fw-bold" style={{ fontSize: "clamp(20px, 4vw, 28px)" }}>
                                     <i className="fa-solid fa-file-lines me-2"></i>COMPROBANTE DE PAGO
@@ -942,7 +935,7 @@ export const ComprarTicket = () => {
                                                 <img
                                                     src={preview}
                                                     alt="Vista previa del comprobante"
-                                                    className="img-fluid rounded-5"
+                                                    className="img-fluid rounded-5 opacity-75"
                                                     style={{ maxWidth: '150px', filter: 'drop-shadow(0 2px 20px rgba(217,4,41,0.2))' }}
                                                 />
                                                 <button
@@ -952,8 +945,9 @@ export const ComprarTicket = () => {
                                                     onClick={() => {
                                                         setPreview(null);
                                                         setFormData({ ...formData, comprobante: null });
-                                                        const fileInput = document.getElementById('comprobante');
-                                                        if (fileInput) fileInput.value = '';
+                                                        if (fileInputRef.current) {
+                                                            fileInputRef.current.value = '';
+                                                        }
                                                     }}
                                                 >
                                                     <i className="fa-solid fa-times"></i>
@@ -963,6 +957,7 @@ export const ComprarTicket = () => {
                                     </div>
                                     <div className="col-12 col-md-8 d-flex flex-column justify-content-center">
                                         <input
+                                            ref={fileInputRef}
                                             id="comprobante"
                                             type="file"
                                             className="form-control rounded-3"
@@ -983,7 +978,7 @@ export const ComprarTicket = () => {
                                 <h6 className="text-center text-muted mb-3">Al confirmar autorizo el uso de Mis Datos Personales</h6>
                                 <button
                                     type="submit"
-                                    className="btn btn-danger btn-lg px-4 px-md-5 w-100 w-md-auto"
+                                    className="btn btn-danger rounded-5 px-5"
                                     disabled={ticketsSeleccionados.length === 0}
                                 >
                                     <i className="fa-solid fa-check me-2"></i>
@@ -997,5 +992,7 @@ export const ComprarTicket = () => {
         </div>
     );
 };
+
+
 
 export default ComprarTicket;
