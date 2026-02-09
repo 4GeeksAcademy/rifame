@@ -20,7 +20,7 @@ import ResetPassword from "./pages/ResetPassword.jsx";
 import ComprarTicket from "./pages/ComprarTicket.jsx";
 import AdminPanel from "./pages/AdminPanel.jsx";
 import GestionCompradores from "./pages/GestionCompradores.jsx";
-
+import Clientes from "./pages/Clientes.jsx";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -39,6 +39,7 @@ export const router = createBrowserRouter(
       <Route path="/admin-panel" element={<AdminPanel />} />
       <Route path="/detalle-rifa" element={<DetalleRifa />} />
       <Route path="/rifa/:rifaId/compradores" element={<GestionCompradores />} />
+      <Route path="/clientes" element={<Clientes />} />
     </Route>
   )
 )

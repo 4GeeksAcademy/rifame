@@ -172,9 +172,9 @@ const Dashboard = () => {
                                     </Link>
                                 </div>
                                 <div className="col-md-3 col-sm-6">
-                                    <Link to="/pagos" className="btn btn-outline-success w-100">
+                                    <Link to="/clientes" className="btn btn-outline-success w-100">
                                         <i className="fa-solid fa-money-bill me-2"></i>
-                                        Ver Pagos
+                                        Ver Mis Clientes
                                     </Link>
                                 </div>
                                 <div className="col-md-3 col-sm-6">
@@ -241,16 +241,17 @@ const Dashboard = () => {
                                                         <td>{rifa.cantidad_tickets}</td>
                                                         <td>{new Date(rifa.fecha_sorteo).toLocaleDateString()}</td>
                                                         <td>
-                                                            <span className={`badge ${activa ? 'bg-success' : 'bg-secondary'}`}>
+                                                            <span className={`badge rounded-5 ${activa ? 'bg-success' : 'bg-secondary'}`}>
                                                                 {activa ? 'Activa' : 'Finalizada'}
                                                             </span>
                                                         </td>
                                                         <td>
                                                             <Link 
-                                                                to={`/rifa/${rifa.id}`} 
-                                                                className="btn btn-sm btn-outline-primary"
+                                                                to={`/comprar-ticket/${rifa.id}`}
+                                                                className="btn btn-sm btn-outline-success rounded-5"
                                                             >
-                                                                Ver
+                                                                <i className="fa-solid fa-ticket me-1"></i>
+                                                                Vender
                                                             </Link>
                                                         </td>
                                                     </tr>

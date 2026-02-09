@@ -8,6 +8,8 @@ from api.models import db, User, Rifa, Ticket, Comprador_ticket
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import func, case
+
 
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
@@ -177,9 +179,44 @@ def get_rifas_by_user(user_id):
     if current_user_id != user_id:
         return jsonify({"message": "No autorizado"}), 403
 
-    rifas = Rifa.query.filter_by(user_id=user_id).all()
-    rifas = [rifa.serialize() for rifa in rifas]
-    return jsonify(rifas), 200
+    vendidos_subq = (
+        db.session.query(
+            Ticket.rifa_id.label("rifa_id"),
+            func.count(Comprador_ticket.id).label("tickets_vendidos"),
+            func.sum(
+                case(
+                    (Comprador_ticket.estado == "pendiente", 1),
+                    else_=0
+                )
+            ).label("pagos_pendientes")
+        )
+        .select_from(Ticket)
+        .join(Comprador_ticket, Comprador_ticket.ticket_id == Ticket.id)
+        .group_by(Ticket.rifa_id)
+        .subquery()
+    )
+
+    rifas = (
+        db.session.query(
+            Rifa,
+            func.coalesce(vendidos_subq.c.tickets_vendidos,
+                          0).label("tickets_vendidos"),
+            func.coalesce(vendidos_subq.c.pagos_pendientes,
+                          0).label("pagos_pendientes")
+        )
+        .outerjoin(vendidos_subq, vendidos_subq.c.rifa_id == Rifa.id)
+        .filter(Rifa.user_id == user_id)
+        .all()
+    )
+
+    result = []
+    for rifa, tickets_vendidos, pagos_pendientes in rifas:
+        data = rifa.serialize()
+        data["tickets_vendidos"] = int(tickets_vendidos)
+        data["pagos_pendientes"] = int(pagos_pendientes)
+        result.append(data)
+
+    return jsonify(result), 200
 
 
 @api.route('/rifa', methods=['POST'])
@@ -555,3 +592,50 @@ def rechazar_comprador(comprador_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "Error al rechazar comprador", "error": str(e)}), 500
+
+
+@api.route('/user/<int:user_id>/clientes', methods=['GET'])
+@jwt_required()
+def get_clientes_by_user(user_id):
+    """Obtener todos los clientes únicos de un usuario (deduplicados por email)"""
+    current_user_id = get_jwt_identity()
+    current_user_id = int(current_user_id)
+
+    # Solo puede ver sus propios clientes
+    if current_user_id != user_id:
+        return jsonify({"message": "No autorizado"}), 403
+
+    # Obtener todos los compradores de todas las rifas del usuario
+    compradores = db.session.query(
+        Comprador_ticket.id,
+        Comprador_ticket.nombre_comprador,
+        Comprador_ticket.email_comprador,
+        Comprador_ticket.telefono_comprador,
+        Comprador_ticket.pais_comprador,
+        Comprador_ticket.estado,
+        Ticket.numero_ticket,
+        Rifa.titulo
+    ).select_from(Comprador_ticket)\
+     .join(Ticket, Comprador_ticket.ticket_id == Ticket.id)\
+     .join(Rifa, Ticket.rifa_id == Rifa.id)\
+     .filter(Rifa.user_id == user_id)\
+     .all()
+
+    # Deduplicar por email (mantener el primer registro de cada cliente)
+    clientes_unicos = {}
+    for comprador in compradores:
+        email = comprador.email_comprador
+        if email not in clientes_unicos:
+            clientes_unicos[email] = {
+                "id": comprador.id,
+                "nombre": comprador.nombre_comprador,
+                "email": email,
+                "telefono": comprador.telefono_comprador,
+                "pais": comprador.pais_comprador,
+                "rifas_compradas": 1,
+                "estado": comprador.estado
+            }
+        else:
+            clientes_unicos[email]["rifas_compradas"] += 1
+
+    return jsonify(list(clientes_unicos.values())), 200

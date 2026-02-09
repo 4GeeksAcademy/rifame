@@ -1,5 +1,3 @@
-import React, { useEffect } from "react"
-import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
 export const Home = () => {
 
@@ -8,7 +6,7 @@ export const Home = () => {
 			<section
 				className="justify-content-center align-items-center row mx-3 mx-md-5 mb-5 px-3"
 				style={{ backgroundImage: "url('https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770358857/red_wavy_with_halftone_background_j4ui6q.jpg')", backgroundSize: "cover", minHeight: "500px", height: "auto", borderRadius: "15px" }}
-				id="scrollspyHeading1"
+				id="acerca"
 			>
 				<div className="text-start text-md-start mt-5 col-12 col-lg-4 align-self-start" style={{ color: "#d90429" }}>
 					<h1 style={{ fontSize: "clamp(32px, 6vw, 94px)", fontWeight: "bold" }}>Sistema de Rifas Online</h1>
@@ -27,7 +25,7 @@ export const Home = () => {
 			<section
 				className="justify-content-center align-items-center row mx-3 mx-md-5 mb-5 px-3"
 				style={{ borderRadius: "15px" }}
-				id="scrollspyHeading2"
+				id="bienvenidos"
 			>
 				<div className="d-flex justify-content-center col-12 col-md-6 col-lg-2 mb-4">
 					<div className="flex-column w-100">
@@ -62,7 +60,7 @@ export const Home = () => {
 
 			<section
 				className="justify-content-center align-items-center row mx-3 mx-md-5 mb-5 px-3"
-				id="scrollspyHeading3"
+				id="plataforma"
 			>
 				<div className="col-12 col-lg-4 mb-4 mb-lg-0 me-lg-5">
 					<h6 className="text-start mb-5">PLATAFORMA COMPLETA</h6>
@@ -128,7 +126,8 @@ export const Home = () => {
 				</div>
 			</section>
 
-			<section id="scrollspyHeading4">
+			<section
+				id="promociones">
 				<div className="container my-5 p-4 p-md-5 rounded-4 bg-body-tertiary">
 					<div className="d-flex flex-column flex-lg-row justify-content-center align-items-center m-auto gap-3">
 						<h2 className="text-center m-0 mb-3 mb-lg-0 me-lg-5" style={{ color: "#d90429", fontWeight: "bold", fontSize: "clamp(20px, 4vw, 32px)" }}>Suscríbase para Recibir Promociones</h2>

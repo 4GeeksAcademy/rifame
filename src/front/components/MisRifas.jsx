@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
@@ -93,11 +93,22 @@ const MisRifas = () => {
             <div className="row mb-4">
                 <div className="col-12">
                     <div className="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h1 className="mb-2">Mis Rifas</h1>
-                            <p className="text-muted">Administra todas tus rifas</p>
+                        <div className="d-flex align-items-center">
+                            <button
+                                type="button"
+                                className="btn btn-link"
+                                onClick={() => window.history.back()}
+                            >
+                                <span className="text-danger fs-3">
+                                    <i className="fa-solid fa-angle-left"></i>
+                                </span>
+                            </button>
+                            <div className="ms-2">
+                                <h1 className="mb-0">Mis Rifas</h1>
+                                <p className="text-muted mb-0">Administra todas tus rifas</p>
+                            </div>
                         </div>
-                        <Link to="/crear-rifa" className="btn btn-danger">
+                        <Link to="/crear-rifa" className="btn btn-danger rounded-5">
                             <i className="fa-solid fa-plus me-2"></i>
                             Crear Nueva Rifa
                         </Link>
@@ -117,14 +128,14 @@ const MisRifas = () => {
                         </button>
                         <button
                             type="button"
-                            className={`btn ${filter === 'activas' ? 'btn-danger' : 'btn-outline-danger'}`}
+                            className={`btn ${filter === 'activas' ? 'btn-success' : 'btn-outline-success'}`}
                             onClick={() => setFilter('activas')}
                         >
                             Activas ({rifas.filter(r => new Date(r.fecha_sorteo) > new Date()).length})
                         </button>
                         <button
                             type="button"
-                            className={`btn ${filter === 'finalizadas' ? 'btn-danger' : 'btn-outline-danger'}`}
+                            className={`btn ${filter === 'finalizadas' ? 'btn-secondary' : 'btn-outline-secondary'}`}
                             onClick={() => setFilter('finalizadas')}
                         >
                             Finalizadas ({rifas.filter(r => new Date(r.fecha_sorteo) <= new Date()).length})
@@ -172,7 +183,7 @@ const MisRifas = () => {
                                     />
 
                                     <span
-                                        className={`badge position-absolute top-0 end-0 m-2 ${activa ? 'bg-success' : 'bg-secondary'}`}
+                                        className={`badge position-absolute top-0 end-0 m-2 rounded-5 ${activa ? 'bg-success' : 'bg-secondary'}`}
                                     >
                                         {activa ? 'Activa' : 'Finalizada'}
                                     </span>

@@ -4,8 +4,14 @@ export const ResetPassword = () => {
     return (
         <div>
             <div className="container mt-5 px-3 px-sm-4">
-                <button type="button" className="btn btn-link mb-3 d-flex p-0">
-                    <Link to="/login" className="text-danger fs-3"><i className="fa-solid fa-angle-left"></i></Link>
+                <button 
+                    type="button" 
+                    className="btn btn-link mb-3 d-flex p-0"
+                    onClick={() => window.history.back()}
+                >
+                    <span className="text-danger fs-3">
+                        <i className="fa-solid fa-angle-left"></i>
+                    </span>
                 </button>
                 <h1 className="text-center text-danger text-bold" style={{fontSize: "clamp(28px, 5vw, 60px)"}}>Restablecer Contraseña</h1>
                 <form className="mt-4 mx-auto" style={{maxWidth: "500px"}}>

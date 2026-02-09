@@ -337,6 +337,15 @@ export const ComprarTicket = () => {
             {/* Banner y detalles de la rifa */}
             <div className="container mt-5 px-3 px-md-4 mb-4">
                 <div className="row g-4">
+                    <button
+                        type="button"
+                        className="btn btn-link mb-3 d-flex p-0"
+                        onClick={() => window.history.back()}
+                    >
+                        <span className="text-danger fs-3">
+                            <i className="fa-solid fa-angle-left"></i>
+                        </span>
+                    </button>
                     <div className="col-12 col-lg-6 text-center">
                         <img
                             src={rifa.imagen || "https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770352480/rifas/m7j5drkngidad7fjgrfq.jpg"}

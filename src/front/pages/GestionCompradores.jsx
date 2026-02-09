@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import storeReducer from '../store';
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -155,20 +156,36 @@ export const GestionCompradores = () => {
 
     return (
         <div className="container mt-5 mb-5">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h1 className="text-danger fw-bold">
-                    <i className="fa-solid fa-users me-2"></i>
-                    Gestión de Compradores
-                </h1>
-                <button className="btn btn-outline-danger" onClick={() => navigate('/mis-rifas')}>
-                    <i className="fa-solid fa-arrow-left me-2"></i>
-                    Volver
-                </button>
+
+            <div className="row mb-4">
+                <div className="col-12">
+                    <div className="d-flex justify-content-between align-items-center">
+                        <div className="d-flex align-items-center">
+                            <button
+                                type="button"
+                                className="btn btn-link"
+                                onClick={() => window.history.back()}
+                            >
+                                <span className="text-danger fs-3">
+                                    <i className="fa-solid fa-angle-left"></i>
+                                </span>
+                            </button>
+                            <div className="ms-2">
+                                <h1 className="mb-0">Gestión de Compradores</h1>
+                                <small className="text-muted">Rifa ID: {rifaId}</small>
+                            </div>
+                        </div>
+                        <button className="btn btn-success rounded-5" onClick={() => navigate(`/rifa-publica/${rifaId}`)}>
+                            <i className="fa-solid fa-ticket me-2"></i>
+                            Vender Tickets
+                        </button>
+                    </div>
+                </div>
             </div>
 
             {/* Filtros */}
-            <div className="card mb-4">
-                <div className="card-body">
+            <div className="card mb-4 d-flex">
+                <div className="card-body m-auto text-center">
                     <h5 className="card-title">Filtrar por estado</h5>
                     <div className="btn-group" role="group">
                         <button
@@ -212,7 +229,7 @@ export const GestionCompradores = () => {
                             <div className="card h-100 shadow-sm">
                                 <div className="card-header d-flex justify-content-between align-items-center">
                                     <span className="fw-bold">Ticket #{comprador.numero_ticket}</span>
-                                    <span className={`badge ${getEstadoBadgeClass(comprador.estado)}`}>
+                                    <span className={`badge rounded-5 ${getEstadoBadgeClass(comprador.estado)}`}>
                                         {comprador.estado.toUpperCase()}
                                     </span>
                                 </div>
@@ -247,14 +264,14 @@ export const GestionCompradores = () => {
                                     {comprador.estado === 'pendiente' && (
                                         <div className="d-flex gap-2 mt-2">
                                             <button
-                                                className="btn btn-sm btn-success flex-fill"
+                                                className="btn btn-sm btn-success flex-fill rounded-5"
                                                 onClick={() => verificarComprador(comprador.id)}
                                             >
                                                 <i className="fa-solid fa-check me-1"></i>
                                                 Verificar
                                             </button>
                                             <button
-                                                className="btn btn-sm btn-danger flex-fill"
+                                                className="btn btn-sm btn-danger flex-fill rounded-5"
                                                 onClick={() => rechazarComprador(comprador.id)}
                                             >
                                                 <i className="fa-solid fa-times me-1"></i>
