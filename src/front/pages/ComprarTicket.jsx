@@ -262,7 +262,20 @@ export const ComprarTicket = () => {
 
             if (response.ok) {
                 alert("¡Compra enviada! Recibirás confirmación por email");
-                navigate('/');
+                setTicketsSeleccionados([]);
+                setFormData({
+                    nombreCompleto: '',
+                    telefono: '',
+                    email: '',
+                    comprobante: null
+                });
+                setPreview(null);
+                setPais({});
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
+                await fetchTickets();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 const errorData = await response.json();
                 alert(errorData.message || "Error al procesar la compra");
@@ -478,7 +491,7 @@ export const ComprarTicket = () => {
                                 <small className="text-muted">Pendiente</small>
                             </div>
                             <div className="d-flex align-items-center gap-1">
-                                <div style={{ width: '20px', height: '20px', backgroundColor: '#dc3545', borderRadius: '4px',opacity: 0.6 }}></div>
+                                <div style={{ width: '20px', height: '20px', backgroundColor: '#dc3545', borderRadius: '4px', opacity: 0.6 }}></div>
                                 <small className="text-muted">Vendido</small>
                             </div>
                             <div className="d-flex align-items-center gap-1">
@@ -750,7 +763,6 @@ export const ComprarTicket = () => {
                                                     style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.1))' }}
                                                 ></button>
                                             </div>
-
                                             <div className="modal-body p-4">
                                                 {selectedPaymentMethod.tipo === 'ZELLE' ? (
                                                     <div className="row g-3">
@@ -780,7 +792,6 @@ export const ComprarTicket = () => {
                                                                 </div>
                                                             </div>
                                                         </div>
-
                                                         <div className="col-12">
                                                             <div
                                                                 className="card border-light bg-light cursor-pointer"
@@ -807,7 +818,6 @@ export const ComprarTicket = () => {
                                                                 </div>
                                                             </div>
                                                         </div>
-
                                                         <div className="col-12">
                                                             <div className="alert alert-info border-0 bg-light-info text-info" role="alert">
                                                                 <i className="fa-solid fa-circle-info me-2"></i>
@@ -843,7 +853,6 @@ export const ComprarTicket = () => {
                                                                 </div>
                                                             </div>
                                                         </div>
-
                                                         <div className="col-12">
                                                             <div
                                                                 className="card border-light bg-light cursor-pointer"
@@ -870,7 +879,6 @@ export const ComprarTicket = () => {
                                                                 </div>
                                                             </div>
                                                         </div>
-
                                                         <div className="col-12">
                                                             <div
                                                                 className="card border-light bg-light cursor-pointer"
@@ -897,7 +905,6 @@ export const ComprarTicket = () => {
                                                                 </div>
                                                             </div>
                                                         </div>
-
                                                         <div className="col-12">
                                                             <div className="alert alert-info border-0 bg-light-info text-info" role="alert">
                                                                 <i className="fa-solid fa-circle-info me-2"></i>
@@ -907,7 +914,6 @@ export const ComprarTicket = () => {
                                                     </div>
                                                 )}
                                             </div>
-
                                             <div className="modal-footer border-top-0 p-4">
                                                 <button
                                                     type="button"
@@ -973,7 +979,6 @@ export const ComprarTicket = () => {
                                     </p>
                                 </div>
                             </div>
-
                             <div className="text-center my-4">
                                 <h6 className="text-center text-muted mb-3">Al confirmar autorizo el uso de Mis Datos Personales</h6>
                                 <button
@@ -992,7 +997,4 @@ export const ComprarTicket = () => {
         </div>
     );
 };
-
-
-
 export default ComprarTicket;

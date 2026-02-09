@@ -97,7 +97,6 @@ const Clientes = () => {
                             <div className="ms-2">
                                 <h1 className="mb-0">Clientes</h1>
                                 <p className="text-muted mb-0">Administra todos tus clientes</p>
-
                             </div>
                         </div>
                     </div>
