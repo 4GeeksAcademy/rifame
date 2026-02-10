@@ -1,9 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import  useGlobalReducer  from "../hooks/useGlobalReducer";
-import { login } from "../actions.js";
+
+const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const Login = () => {
+
     const navigate = useNavigate();
     const { dispatch } = useGlobalReducer();
     
@@ -13,6 +15,38 @@ export const Login = () => {
     });
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+
+
+    const login = async (dispatch, email, contrasena) => {
+      try {
+        const response = await fetch(`${API_URL}/api/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, contrasena }),
+        });
+    
+        const data = await response.json();
+    
+        if (!response.ok) {
+          return { success: false, message: data.msg || "Error al iniciar sesión" };
+        }
+    
+        dispatch({
+          type: "login",
+          payload: {
+            user: data.user,
+            token: data.access_token,
+          },
+        });
+    
+        return { success: true, data };
+      } catch (error) {
+        console.error("Error en login:", error);
+        return { success: false, message: "Error de conexión con el servidor" };
+      }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -26,7 +60,6 @@ export const Login = () => {
         e.preventDefault();
         setError("");
 
-        // Validaciones
         if (!formData.email || !formData.contrasena) {
             setError("Por favor, complete todos los campos.");
             return;
@@ -39,7 +72,6 @@ export const Login = () => {
 
         setLoading(true);
 
-        // Llamar a la acción de login
         const result = await login(dispatch, formData.email, formData.contrasena);
 
         if (result.success) {
@@ -55,10 +87,14 @@ export const Login = () => {
     return (
         <div>
             <div className="container mt-5 px-3 px-sm-4">
-                <button type="button" className="btn btn-link mb-3 d-flex p-0">
-                    <Link to="/" className="text-danger fs-3">
+                <button 
+                    type="button" 
+                    className="btn btn-link mb-3 d-flex p-0"
+                    onClick={() => window.history.back()}
+                >
+                    <span className="text-danger fs-3">
                         <i className="fa-solid fa-angle-left"></i>
-                    </Link>
+                    </span>
                 </button>
                 <h1 className="text-center text-danger text-bold" style={{fontSize: "clamp(30px, 5vw, 60px)"}}>
                     Login

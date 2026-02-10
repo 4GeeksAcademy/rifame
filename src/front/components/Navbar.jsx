@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import  useGlobalReducer from "../hooks/useGlobalReducer";
-import { logout } from "../actions.js";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const Navbar = () => {
 
@@ -8,17 +7,21 @@ export const Navbar = () => {
 
 	const { store, dispatch } = useGlobalReducer();
 
+	const logout = (dispatch) => {
+		dispatch({ type: "logout" });
+	};
+
 	const handleLogout = () => {
 		logout(dispatch);
 		navigate("/");
 	};
 
 	return (
-		<nav className="navbar navbar-expand-lg bg-body-tertiary">
+		<nav className="navbar navbar-expand-lg bg-body-tertiary fixed-top shadow-sm">
 			<div className="container-fluid px-3 px-md-4">
 				<Link to="/" className="d-flex align-items-center text-decoration-none">
 					<img
-						src="src/front/assets/img/MagicEraser_260125_114439.PNG"
+						src="https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770357996/MagicEraser_260125_114439_dp3yik.png"
 						alt="Logo"
 						width="40"
 						height="40"
@@ -46,59 +49,86 @@ export const Navbar = () => {
 
 				<div className="collapse navbar-collapse" id="navbarSupportedContent">
 					<ul className="navbar-nav ms-auto mb-2 mb-lg-0 fs-6 fs-lg-5">
-						{/* MENÚ CUANDO NO ESTÁ AUTENTICADO */}
+						{/* no autenticado */}
 						{!store.user && (
 							<>
 								<li className="nav-item dropdown">
-									<a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+									<a className="nav-link dropdown-toggle " href="#inicio" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 										Inicio
 									</a>
 									<ul className="dropdown-menu">
 										<li>
-											<a className="dropdown-item" href="#scrollspyHeading1">Acerca de RIFAME</a>
+											<Link to="/" className="dropdown-item text-danger">Inicio</Link>
 										</li>
 										<li>
-											<a className="dropdown-item" href="#scrollspyHeading2">Bienvenidos</a>
+											<a className="dropdown-item" href="#acerca">Acerca de RIFAME</a>
 										</li>
 										<li>
-											<a className="dropdown-item" href="#scrollspyHeading3">Plataforma Completa</a>
+											<a className="dropdown-item" href="#bienvenidos">Bienvenidos</a>
 										</li>
 										<li>
-											<a className="dropdown-item" href="#scrollspyHeading4">Promociones</a>
+											<a className="dropdown-item" href="#plataforma">Plataforma Completa</a>
+										</li>
+										<li>
+											<a className="dropdown-item" href="#promociones">Promociones</a>
 										</li>
 									</ul>
 								</li>
-								<li className="nav-item">
-									<Link className="nav-link" to="/sistema-pagina">
-										Sistema
-									</Link>
-								</li>
 								<li className="nav-item dropdown">
 									<a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+										Sistema
+									</a>
+									<ul className="dropdown-menu">
+										<li>
+											<Link to="/sistema-pagina" className="dropdown-item text-danger">
+												Sistema
+											</Link>
+										</li>
+										<li>
+											<a className="dropdown-item" href="#sistema">Nuestro Sistema</a>
+										</li>
+										<li>
+											<a className="dropdown-item" href="#pagina-web">Página Web Online</a>
+										</li>
+										<li>
+											<a className="dropdown-item" href="#configuraciones">Configuraciones</a>
+										</li>
+										<li>
+											<a className="dropdown-item" href="#seguridad">Seguridad y Privacidad</a>
+										</li>
+									</ul>
+								</li>
+								<li className="nav-item dropdown">
+									<a className="nav-link dropdown-toggle" href="#beneficios" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 										Beneficios
 									</a>
 									<ul className="dropdown-menu">
 										<li>
-											<a className="dropdown-item" href="#scrollspyHeading1">Pagina Web Personalizada</a>
+											<Link to="/beneficios" className="dropdown-item text-danger">
+												Beneficios
+											</Link>
 										</li>
 										<li>
-											<a className="dropdown-item" href="#scrollspyHeading1">Velocidad Garantizada</a>
+											<a className="dropdown-item" href="#pagina-personalizada">Pagina Web Personalizada</a>
 										</li>
 										<li>
-											<a className="dropdown-item" href="#scrollspyHeading1">Paginado de Tickets</a>
+											<a className="dropdown-item" href="#velocidad">Velocidad Garantizada</a>
 										</li>
 										<li>
-											<a className="dropdown-item" href="#scrollspyHeading1">Página Adaptable</a>
+											<a className="dropdown-item" href="#paginado">Paginado de Tickets</a>
+										</li>
+										<li>
+											<a className="dropdown-item" href="#adaptable">Página Adaptable</a>
 										</li>
 									</ul>
 								</li>
 								<li className="nav-item dropdown">
-									<a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+									<a className="nav-link dropdown-toggle" href="#configuraciones" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 										Configuraciones
 									</a>
 									<ul className="dropdown-menu">
 										<li>
-											<Link to="/configuracion" className="dropdown-item">
+											<Link to="/configuracion" className="dropdown-item text-danger">
 												Configuraciones
 											</Link>
 										</li>
@@ -117,8 +147,8 @@ export const Navbar = () => {
 									</ul>
 								</li>
 								<li className="nav-item">
-									<Link 
-										className="nav-link text-white bg-danger rounded-5 mx-lg-2 px-3 mt-2 mt-lg-0 text-center" 
+									<Link
+										className="nav-link text-white bg-danger rounded-5 mx-lg-2 px-3 mt-2 mt-lg-0 text-center"
 										to="/login"
 									>
 										Iniciar Sesión
@@ -127,7 +157,7 @@ export const Navbar = () => {
 							</>
 						)}
 
-						{/* MENÚ CUANDO ESTÁ AUTENTICADO */}
+						{/* autenticado */}
 						{store.user && (
 							<>
 								<li className="nav-item">
@@ -145,15 +175,15 @@ export const Navbar = () => {
 								</li>
 
 								<li className="nav-item">
-									<Link className="nav-link" to="/pagos">
-										<i className="fa-solid fa-money-bill me-1"></i>
-										Pagos
+									<Link className="nav-link" to="/clientes">
+										<i className="fa-solid fa-users me-1"></i>
+										Clientes
 									</Link>
 								</li>
 
 								<li className="nav-item">
-									<Link 
-										className="nav-link text-white bg-danger rounded-5 mx-lg-2 px-3 mt-2 mt-lg-0 text-center" 
+									<Link
+										className="nav-link text-white bg-danger rounded-5 mx-lg-2 px-3 mt-2 mt-lg-0 text-center"
 										to="/crear-rifa"
 									>
 										<i className="fa-solid fa-plus me-1"></i>
@@ -162,11 +192,11 @@ export const Navbar = () => {
 								</li>
 
 								<li className="nav-item dropdown">
-									<a 
-										className="nav-link dropdown-toggle d-flex align-items-center" 
-										href="#" 
-										role="button" 
-										data-bs-toggle="dropdown" 
+									<a
+										className="nav-link dropdown-toggle d-flex align-items-center"
+										href="#"
+										role="button"
+										data-bs-toggle="dropdown"
 										aria-expanded="false"
 									>
 										<i className="fa-solid fa-user-circle me-2"></i>
@@ -203,8 +233,8 @@ export const Navbar = () => {
 										)}
 										<li><hr className="dropdown-divider" /></li>
 										<li>
-											<button 
-												className="dropdown-item text-danger" 
+											<button
+												className="dropdown-item text-danger"
 												onClick={handleLogout}
 											>
 												<i className="fa-solid fa-right-from-bracket me-2"></i>Cerrar Sesión

@@ -7,6 +7,8 @@ export const initialStore = () => {
     
     rifas: [],
 
+    tickets: [],
+
     compras: [],
   }
 }
@@ -39,7 +41,9 @@ export default function storeReducer(store, action = {}) {
       };
     
     case 'update_user':
-      // Actualizar usuario en localStorage
+
+    // Actualizar usuario en localStorage
+
       localStorage.setItem("user", JSON.stringify(action.payload));
       
       return {
@@ -48,12 +52,7 @@ export default function storeReducer(store, action = {}) {
       };
     
     // ACCIONES DE RIFAS
-    case 'set_rifa':
-      return {
-        ...store,
-        rifas: action.payload
-      };
-      
+
     case 'set_rifas':
       return {
         ...store,
@@ -100,17 +99,3 @@ export default function storeReducer(store, action = {}) {
       throw Error('Unknown action: ' + action.type);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

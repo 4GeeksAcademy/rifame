@@ -1,4 +1,4 @@
-const fondo1 = "/red_wavy_with_halftone_background.jpg";
+const fondo1 = "https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770358857/red_wavy_with_halftone_background_j4ui6q.jpg";
 
 const Configuracion = () => {
 

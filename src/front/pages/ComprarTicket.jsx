@@ -1,12 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const ComprarTicket = () => {
     const API_URL = import.meta.env.VITE_BACKEND_URL;
+    const CLOUDINARY_CLOUD_NAME = "dkkkjhhgl";
+    const CLOUDINARY_UPLOAD_PRESET = "comprobantes-pagos";
+
     const { rifaId } = useParams();
     const navigate = useNavigate();
 
-    // Estados para la rifa y UI
+    const fileInputRef = useRef(null);
+    const ticketRefs = useRef({});
+
     const [rifa, setRifa] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -15,8 +20,13 @@ export const ComprarTicket = () => {
     const [ticketsSeleccionados, setTicketsSeleccionados] = useState([]);
     const [limitePersonalizado, setLimitePersonalizado] = useState(1);
     const [pais, setPais] = useState({});
+    const [busqueda, setBusqueda] = useState('');
+    const [ticketEncontrado, setTicketEncontrado] = useState(null);
+    const [ultimaActualizacion, setUltimaActualizacion] = useState(null);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
-    // Estados del formulario
+    const pollingIntervalRef = useRef(null);
+
     const [formData, setFormData] = useState({
         nombreCompleto: '',
         telefono: '',
@@ -25,8 +35,37 @@ export const ComprarTicket = () => {
     });
 
     const LimiteMaximo = 10;
+    const POLLING_INTERVAL = 5000;
 
-    // Cargar detalles de la rifa (PÚBLICO - sin autenticación)
+    const fetchTickets = async () => {
+        try {
+            const ticketsResponse = await fetch(`${API_URL}/api/ticket/${rifaId}`);
+            if (ticketsResponse.ok) {
+                const ticketsBd = await ticketsResponse.json();
+
+                const ticketsFormateados = ticketsBd.map(t => ({
+                    id: t.id,
+                    numero: String(t.numero_ticket).padStart(3, '0'),
+                    disponible: t.estado === 'disponible',
+                    estado: t.estado || 'disponible',
+                    precio: rifa?.precio_ticket || 0
+                }));
+
+                setTickets(ticketsFormateados);
+                setUltimaActualizacion(new Date());
+
+                setTicketsSeleccionados(prev =>
+                    prev.filter(numTicket => {
+                        const ticket = ticketsFormateados.find(t => t.numero === numTicket);
+                        return ticket && ticket.disponible;
+                    })
+                );
+            }
+        } catch (err) {
+            console.error("Error actualizando tickets:", err);
+        }
+    };
+
     useEffect(() => {
         const fetchRifaPublica = async () => {
             if (!rifaId || !API_URL) {
@@ -40,15 +79,23 @@ export const ComprarTicket = () => {
                 const response = await fetch(`${API_URL}/api/rifa/publica/${rifaId}`);
 
                 if (response.ok) {
-                    const data = await response.json();
-                    setRifa(data);
+                    const rifaData = await response.json();
+                    setRifa(rifaData);
 
-                    // Generar tickets basados en la cantidad real
-                    const ticketsGenerados = generarTickets(
-                        data.cantidad_tickets || 100,
-                        data.precio_ticket || 0
-                    );
-                    setTickets(ticketsGenerados);
+                    const ticketsResponse = await fetch(`${API_URL}/api/ticket/${rifaId}`);
+                    if (ticketsResponse.ok) {
+                        const ticketsBd = await ticketsResponse.json();
+
+                        const ticketsFormateados = ticketsBd.map(t => ({
+                            id: t.id,
+                            numero: String(t.numero_ticket).padStart(3, '0'),
+                            disponible: t.estado === 'disponible',
+                            estado: t.estado || 'disponible',
+                            precio: rifaData.precio_ticket
+                        }));
+                        setTickets(ticketsFormateados);
+                        setUltimaActualizacion(new Date());
+                    }
                     setError(null);
                 } else if (response.status === 404) {
                     setError("Rifa no encontrada");
@@ -65,23 +112,28 @@ export const ComprarTicket = () => {
         fetchRifaPublica();
     }, [rifaId, API_URL]);
 
-    const generarTickets = (total, precio) => {
-        const tickets = [];
-        for (let i = 0; i < total; i++) {
-            tickets.push({
-                numero: String(i).padStart(3, '0'),
-                disponible: true,
-                precio: precio
-            });
-        }
-        return tickets;
-    };
+    useEffect(() => {
+        if (!rifa || !rifaId) return;
+
+        pollingIntervalRef.current = setInterval(() => {
+            fetchTickets();
+        }, POLLING_INTERVAL);
+
+        return () => clearInterval(pollingIntervalRef.current);
+    }, [rifa, rifaId]);
 
     const elegirASuerte = (total, limite) => {
         const seleccionados = new Set();
+        const ticketsDisponibles = tickets.filter(t => t.disponible).map(t => t.numero);
+
+        if (ticketsDisponibles.length < limite) {
+            alert(`Solo hay ${ticketsDisponibles.length} tickets disponibles`);
+            return [];
+        }
+
         while (seleccionados.size < limite) {
-            const aleatorio = Math.floor(Math.random() * total);
-            seleccionados.add(String(aleatorio).padStart(3, '0'));
+            const aleatorio = ticketsDisponibles[Math.floor(Math.random() * ticketsDisponibles.length)];
+            seleccionados.add(aleatorio);
         }
         return Array.from(seleccionados);
     };
@@ -99,6 +151,30 @@ export const ComprarTicket = () => {
         });
     };
 
+    const buscarTicket = () => {
+        if (!busqueda.trim()) {
+            setTicketEncontrado(null);
+            return;
+        }
+
+        const busquedaNormalizada = busqueda.trim().padStart(3, '0');
+        const ticket = tickets.find(t => t.numero === busquedaNormalizada);
+
+        if (ticket) {
+            setTicketEncontrado(ticket);
+            setTimeout(() => {
+                const elemento = ticketRefs.current[ticket.numero];
+                if (elemento) {
+                    elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    elemento.style.animation = 'parpadeo 1s ease-in-out 3';
+                }
+            }, 100);
+        } else {
+            setTicketEncontrado(null);
+            alert(`Ticket ${busquedaNormalizada} no encontrado`);
+        }
+    };
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -107,6 +183,32 @@ export const ComprarTicket = () => {
             setFormData(prev => ({ ...prev, comprobante: file }));
 
             return () => URL.revokeObjectURL(objectUrl);
+        }
+    };
+
+    const uploadComprobanteToCloudinary = async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+        try {
+            const response = await fetch(
+                `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+                {
+                    method: 'POST',
+                    body: formData
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Error al subir el comprobante');
+            }
+
+            const data = await response.json();
+            return data.secure_url;
+        } catch (error) {
+            console.error('Error uploading to Cloudinary:', error);
+            return null;
         }
     };
 
@@ -123,36 +225,66 @@ export const ComprarTicket = () => {
             return;
         }
 
-        const compraData = new FormData();
-        compraData.append('rifa_id', rifaId);
-        compraData.append('tickets', JSON.stringify(ticketsSeleccionados));
-        compraData.append('nombre', formData.nombreCompleto);
-        compraData.append('telefono', `${pais.prefijo || ''} ${formData.telefono}`);
-        compraData.append('email', formData.email);
-        compraData.append('comprobante', formData.comprobante);
-        compraData.append('total', ticketsSeleccionados.length * (rifa?.precio_ticket || 0));
+        const ticketsNoDisponibles = ticketsSeleccionados.filter(numTicket => {
+            const ticket = tickets.find(t => t.numero === numTicket);
+            return !ticket || !ticket.disponible;
+        });
+
+        if (ticketsNoDisponibles.length > 0) {
+            alert(`Los siguientes tickets ya no están disponibles: ${ticketsNoDisponibles.join(', ')}`);
+            await fetchTickets();
+            return;
+        }
 
         try {
+            const comprobanteUrl = await uploadComprobanteToCloudinary(formData.comprobante);
+            if (!comprobanteUrl) {
+                alert("Error al subir el comprobante");
+                return;
+            }
+
+            const payload = {
+                rifa_id: rifaId,
+                tickets: ticketsSeleccionados,
+                nombre: formData.nombreCompleto,
+                telefono: `${pais.prefijo || ''} ${formData.telefono}`,
+                email: formData.email,
+                pais: pais.nombre || "",
+                comprobante_url: comprobanteUrl,
+                total: ticketsSeleccionados.length * (rifa?.precio_ticket || 0)
+            };
+
             const response = await fetch(`${API_URL}/api/compra-ticket`, {
                 method: 'POST',
-                body: compraData
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
 
             if (response.ok) {
                 alert("¡Compra enviada! Recibirás confirmación por email");
-                navigate('/');
+                setTicketsSeleccionados([]);
+                setFormData({
+                    nombreCompleto: '',
+                    telefono: '',
+                    email: '',
+                    comprobante: null
+                });
+                setPreview(null);
+                setPais({});
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
+                await fetchTickets();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
-                alert("Error al procesar la compra");
+                const errorData = await response.json();
+                alert(errorData.message || "Error al procesar la compra");
+                await fetchTickets();
             }
         } catch (error) {
             alert("Error de conexión");
         }
     };
-
-    const metodosDePago = [
-        { nombre: "Zelle", titular: "Juan Perez", numero: "1234567890", imgSrc: "/src/front/assets/img/zelle-logo.png" },
-        { nombre: "Transferencia Bancaria", titular: "Maria Lopez", numeroDeRuta: "0987654321", numeroDeCuenta: "1122334455", imgSrc: "/src/front/assets/img/Transferencia-logo.png" }
-    ];
 
     const paises = [
         { nombre: "República Dominicana", codigo: "RD", prefijo: "🇩🇴+1" },
@@ -169,7 +301,6 @@ export const ComprarTicket = () => {
         { nombre: "Perú", codigo: "PE", prefijo: "🇵🇪+51" }
     ];
 
-    // Estados de carga y error
     if (loading) {
         return (
             <div className="container mt-5 text-center">
@@ -196,7 +327,6 @@ export const ComprarTicket = () => {
         );
     }
 
-    // Manejar fechas de forma segura
     let fechaSorteo = new Date();
     try {
         if (rifa.fecha_sorteo) {
@@ -214,17 +344,26 @@ export const ComprarTicket = () => {
 
     return (
         <div>
-            {/* Banner y detalles de la rifa */}
+            {/* Detalles de la rifa */}
             <div className="container mt-5 px-3 px-md-4 mb-4">
                 <div className="row g-4">
+                    <button
+                        type="button"
+                        className="btn btn-link mb-3 d-flex p-0"
+                        onClick={() => window.history.back()}
+                    >
+                        <span className="text-danger fs-3">
+                            <i className="fa-solid fa-angle-left"></i>
+                        </span>
+                    </button>
                     <div className="col-12 col-lg-6 text-center">
                         <img
-                            src={rifa.imagen || "/src/front/assets/img/plantilla-rifa-ejemplo.jpg"}
+                            src={rifa.imagen || "https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770352480/rifas/m7j5drkngidad7fjgrfq.jpg"}
                             alt={rifa.titulo}
                             className="img-fluid rounded-5"
                             style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', maxWidth: '100%' }}
                             onError={(e) => {
-                                e.target.src = "/src/front/assets/img/plantilla-rifa-ejemplo.jpg";
+                                e.target.src = "https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770352480/rifas/m7j5drkngidad7fjgrfq.jpg";
                             }}
                         />
                     </div>
@@ -247,11 +386,9 @@ export const ComprarTicket = () => {
                     </div>
                 </div>
             </div>
-
             <div className="container mt-5 px-3 px-md-4 mb-5" style={{ maxWidth: '900px' }}>
                 <div style={{ borderRadius: '18px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', padding: '20px' }}>
                     <h1 className="text-center text-danger fw-bold" style={{ fontSize: "clamp(28px, 5vw, 48px)" }}>Lista de Tickets</h1>
-
                     <div className="text-center mb-4">
                         <div className='d-flex justify-content-center align-items-center gap-2'>
                             <button
@@ -291,7 +428,51 @@ export const ComprarTicket = () => {
                             Total: ${totalCompra}
                         </h5>
 
-                        <input className="form-control input-sin-estilos rounded-5 m-auto mt-2 text-center" style={{ maxWidth: "200px" }} type="text" placeholder="Buscar"></input>
+                        <div className="d-flex justify-content-center gap-2 mt-2">
+                            <input
+                                className="form-control input-sin-estilos rounded-5 text-center"
+                                style={{ maxWidth: "150px" }}
+                                type="text"
+                                placeholder="Buscar"
+                                value={busqueda}
+                                onChange={(e) => setBusqueda(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && buscarTicket()}
+                            />
+                            <button
+                                className="btn btn-danger rounded-circle"
+                                onClick={buscarTicket}
+                                title="Buscar ticket"
+                            >
+                                <i className="fa-solid fa-search"></i>
+                            </button>
+                            {busqueda && (
+                                <button
+                                    className="btn btn-outline-danger rounded-circle"
+                                    onClick={() => {
+                                        setBusqueda('');
+                                        setTicketEncontrado(null);
+                                    }}
+                                    title="Limpiar búsqueda"
+                                >
+                                    <i className="fa-solid fa-times"></i>
+                                </button>
+                            )}
+                        </div>
+
+                        {ticketEncontrado && (
+                            <div className="alert alert-info mt-2 py-2" style={{ maxWidth: '300px', margin: '10px auto' }}>
+                                <small>
+                                    <strong>Ticket {ticketEncontrado.numero}</strong>
+                                    {ticketEncontrado.disponible ? (
+                                        <span className="text-success"> - Disponible ✓</span>
+                                    ) : ticketEncontrado.estado === 'pendiente' ? (
+                                        <span className="text-warning"> - Pendiente ⏳</span>
+                                    ) : (
+                                        <span className="text-danger"> - Vendido ✗</span>
+                                    )}
+                                </small>
+                            </div>
+                        )}
 
                         <button className="btn btn-outline-danger btn-lg mt-2 px-3 px-md-4 rounded-5" onClick={() => {
                             const seleccionados = elegirASuerte(tickets.length, limitePersonalizado);
@@ -299,32 +480,80 @@ export const ComprarTicket = () => {
                         }}>
                             <i className="fa-solid fa-fire"></i> Elegir a la suerte <i className="fa-solid fa-fire"></i>
                         </button>
-                    </div>
 
-                    <div className="px-2 px-md-5" style={{ height: '400px', overflowY: 'scroll' }}>
-                        <div className='d-flex flex-wrap justify-content-center gap-1'>
-                            {tickets.map((ticket) => (
-                                <button
-                                    key={ticket.numero}
-                                    className="btn btn-secondary"
-                                    onClick={() => seleccionarTicket(ticket.numero)}
-                                    style={{
-                                        width: '4rem',
-                                        height: '2rem',
-                                        fontSize: '12px',
-                                        fontWeight: 'bold',
-                                        borderRadius: '18px',
-                                        backgroundColor: ticketsSeleccionados.includes(ticket.numero) ? '#d90429' : '#6c757d',
-                                        color: 'white',
-                                        boxShadow: ticketsSeleccionados.includes(ticket.numero) ? '0 4px 8px rgba(217,4,41,0.2)' : 'none'
-                                    }}
-                                >
-                                    {ticket.numero}
-                                </button>
-                            ))}
+                        <div className="d-flex justify-content-center gap-3 mt-3 flex-wrap">
+                            <div className="d-flex align-items-center gap-1">
+                                <div style={{ width: '20px', height: '20px', backgroundColor: '#6c757d', borderRadius: '4px' }}></div>
+                                <small className="text-muted">Disponible</small>
+                            </div>
+                            <div className="d-flex align-items-center gap-1">
+                                <div style={{ width: '20px', height: '20px', backgroundColor: '#ffc107', borderRadius: '4px' }}></div>
+                                <small className="text-muted">Pendiente</small>
+                            </div>
+                            <div className="d-flex align-items-center gap-1">
+                                <div style={{ width: '20px', height: '20px', backgroundColor: '#dc3545', borderRadius: '4px', opacity: 0.6 }}></div>
+                                <small className="text-muted">Vendido</small>
+                            </div>
+                            <div className="d-flex align-items-center gap-1">
+                                <div style={{ width: '20px', height: '20px', backgroundColor: '#d90429', borderRadius: '4px' }}></div>
+                                <small className="text-muted">Seleccionado</small>
+                            </div>
                         </div>
                     </div>
+                    {/* Lista de tickets */}
+                    <div className="px-2 px-md-5" style={{ height: '400px', overflowY: 'scroll' }}>
+                        <div className='d-flex flex-wrap justify-content-center gap-1'>
+                            {tickets.map((ticket) => {
+                                let backgroundColor = '#6c757d';
+                                let cursor = 'pointer';
+                                let opacity = 1;
 
+                                if (ticketsSeleccionados.includes(ticket.numero)) {
+                                    backgroundColor = '#d90429';
+                                } else if (ticket.estado === 'pendiente') {
+                                    backgroundColor = '#ffc107';
+                                    cursor = 'not-allowed';
+                                    opacity = 0.8;
+                                } else if (ticket.estado === 'verificado') {
+                                    backgroundColor = '#dc3545';
+                                    cursor = 'not-allowed';
+                                    opacity = 0.6;
+                                } else if (ticket.estado === 'rechazado') {
+                                    backgroundColor = '#6c757d';
+                                } else if (!ticket.disponible) {
+                                    backgroundColor = '#333';
+                                    cursor = 'not-allowed';
+                                    opacity = 0.5;
+                                }
+
+                                return (
+                                    <button
+                                        key={ticket.numero}
+                                        ref={(el) => ticketRefs.current[ticket.numero] = el}
+                                        className="btn"
+                                        disabled={!ticket.disponible}
+                                        onClick={() => seleccionarTicket(ticket.numero)}
+                                        style={{
+                                            width: '4rem',
+                                            height: '2rem',
+                                            fontSize: '12px',
+                                            fontWeight: 'bold',
+                                            borderRadius: '18px',
+                                            color: 'white',
+                                            boxShadow: ticketsSeleccionados.includes(ticket.numero) ? '0 4px 8px rgba(217,4,41,0.2)' : 'none',
+                                            backgroundColor,
+                                            cursor,
+                                            opacity,
+                                            transition: 'all 0.3s ease',
+                                        }}
+                                    >
+                                        {ticket.numero}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    {/* Tickets seleccionados */}
                     <div className="text-center my-4 d-flex flex-column align-items-center">
                         <h3 className="text-center">Seleccionados</h3>
                         <div className="text-center text-danger fw-bold">
@@ -335,9 +564,9 @@ export const ComprarTicket = () => {
                                 {ticketsSeleccionados.map(num => (
                                     <button
                                         key={num}
-                                        className="btn btn-primary"
+                                        className="btn btn-outline-danger rounded-5"
+                                        style={{ width: '4rem', height: '2rem', fontSize: '12px', fontWeight: 'bold' }}
                                         onClick={() => seleccionarTicket(num)}
-                                        style={{ width: '4rem', height: '2rem', fontSize: '12px', fontWeight: 'bold', borderRadius: '18px' }}
                                     >
                                         {num}
                                     </button>
@@ -345,7 +574,7 @@ export const ComprarTicket = () => {
                             </div>
                         )}
                     </div>
-
+                    {/* Datos personales */}
                     <form onSubmit={handleSubmit}>
                         <div className="px-2 px-md-5 my-4">
                             <div className="mt-4">
@@ -408,36 +637,298 @@ export const ComprarTicket = () => {
                                     </div>
                                 </div>
                             </div>
-
+                            {/* Métodos de pago */}
                             <div className="mt-4">
                                 <h1 className="text-start mb-3 text-danger fw-bold" style={{ fontSize: "clamp(20px, 4vw, 28px)" }}>
                                     <i className="fa-solid fa-credit-card me-2"></i>MÉTODOS DE PAGO
                                 </h1>
-                                <h6 className="text-start text-muted mb-3">Elige una opción</h6>
-                                <div className="row g-4">
-                                    {metodosDePago.map((metodo, index) => (
-                                        <div key={index} className="col-12 col-md-6 text-center">
-                                            <img
-                                                src={metodo.imgSrc}
-                                                alt={`${metodo.nombre} Logo`}
-                                                className="img-fluid rounded-circle p-2"
-                                                style={{
-                                                    backgroundColor: "#d0d0d0",
-                                                    maxHeight: '100px',
-                                                    boxShadow: '0 2px 20px rgba(217,4,41,0.2)'
-                                                }}
-                                            />
-                                            <div className="mt-2">
-                                                <p className="mb-1"><strong>Nombre del titular:</strong> {metodo.titular}</p>
-                                                {metodo.numero && <p className="mb-1"><strong>Número:</strong> {metodo.numero}</p>}
-                                                {metodo.numeroDeRuta && <p className="mb-1"><strong>Número de Ruta:</strong> {metodo.numeroDeRuta}</p>}
-                                                {metodo.numeroDeCuenta && <p className="mb-1"><strong>Número de Cuenta:</strong> {metodo.numeroDeCuenta}</p>}
+                                <h6 className="text-start text-muted mb-3">Selecciona un método de pago para ver los detalles</h6>
+
+                                {rifa.metodo_pagos ? (
+                                    <div className="d-flex justify-content-center gap-4 flex-wrap mb-4">
+                                        {rifa.metodo_pagos.split(',').map((metodo, index) => {
+                                            const metodoPago = metodo.trim();
+
+                                            if (metodoPago === 'ZELLE' && rifa.titular_zelle && rifa.contacto_zelle) {
+                                                return (
+                                                    <button
+                                                        key={index}
+                                                        className="btn p-0 border-0"
+                                                        onClick={() => setSelectedPaymentMethod({
+                                                            tipo: 'ZELLE',
+                                                            titular: rifa.titular_zelle,
+                                                            contacto: rifa.contacto_zelle,
+                                                            imagen: "https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770359127/zelle-logo_ewoyis.png"
+                                                        })}
+                                                        style={{
+                                                            cursor: 'pointer',
+                                                            transition: 'transform 0.3s ease, filter 0.3s ease'
+                                                        }}
+                                                        onMouseEnter={(e) => {
+                                                            e.currentTarget.style.transform = 'scale(1.1)';
+                                                            e.currentTarget.style.filter = 'drop-shadow(0 4px 15px rgba(217,4,41,0.3))';
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.transform = 'scale(1)';
+                                                            e.currentTarget.style.filter = 'drop-shadow(0 2px 10px rgba(217,4,41,0.1))';
+                                                        }}
+                                                    >
+                                                        <img
+                                                            src="https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770359127/zelle-logo_ewoyis.png"
+                                                            alt="Zelle"
+                                                            style={{
+                                                                height: '120px',
+                                                                filter: 'drop-shadow(0 2px 10px rgba(217,4,41,0.1))',
+                                                                borderRadius: '10px'
+                                                            }}
+                                                        />
+                                                    </button>
+                                                );
+                                            }
+
+                                            if (metodoPago === 'Transferencia-Bancaria' && rifa.titular_transferencia &&
+                                                rifa.numero_ruta && rifa.numero_cuenta) {
+                                                return (
+                                                    <button
+                                                        key={index}
+                                                        className="btn p-0 border-0"
+                                                        onClick={() => setSelectedPaymentMethod({
+                                                            tipo: 'Transferencia Bancaria',
+                                                            titular: rifa.titular_transferencia,
+                                                            ruta: rifa.numero_ruta,
+                                                            cuenta: rifa.numero_cuenta,
+                                                            imagen: "https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770358971/Transferencia-logo_h2p0li.png"
+                                                        })}
+                                                        style={{
+                                                            cursor: 'pointer',
+                                                            transition: 'transform 0.3s ease, filter 0.3s ease'
+                                                        }}
+                                                        onMouseEnter={(e) => {
+                                                            e.currentTarget.style.transform = 'scale(1.1)';
+                                                            e.currentTarget.style.filter = 'drop-shadow(0 4px 15px rgba(40,167,69,0.3))';
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.transform = 'scale(1)';
+                                                            e.currentTarget.style.filter = 'drop-shadow(0 2px 10px rgba(40,167,69,0.1))';
+                                                        }}
+                                                    >
+                                                        <img
+                                                            src="https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770358971/Transferencia-logo_h2p0li.png"
+                                                            alt="Transferencia Bancaria"
+                                                            style={{
+                                                                height: '120px',
+                                                                filter: 'drop-shadow(0 2px 10px rgba(40,167,69,0.1))',
+                                                                borderRadius: '10px'
+                                                            }}
+                                                        />
+                                                    </button>
+                                                );
+                                            }
+
+                                            return null;
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className="alert alert-warning" role="alert">
+                                        <i className="fa-solid fa-exclamation-triangle me-2"></i>
+                                        No hay métodos de pago configurados para esta rifa
+                                    </div>
+                                )}
+                            </div>
+                            {/* Modal de método de pago */}
+                            {selectedPaymentMethod && (
+                                <div
+                                    className="modal fade show d-block"
+                                    tabIndex="-1"
+                                    style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+                                    onClick={() => setSelectedPaymentMethod(null)}
+                                >
+                                    <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
+                                        <div className="modal-content border-0 rounded-4" style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.2)' }}>
+                                            <div className="modal-header border-bottom-0 bg-gradient p-4">
+                                                <div className="d-flex align-items-center gap-2">
+                                                    <img
+                                                        src={selectedPaymentMethod.imagen}
+                                                        alt={selectedPaymentMethod.tipo}
+                                                        style={{ maxHeight: '50px', filter: 'drop-shadow(0 2px 8px rgba(217,4,41,0.2))' }}
+                                                    />
+                                                    <h5 className="modal-title text-danger fw-bold mb-0">
+                                                        {selectedPaymentMethod.tipo}
+                                                    </h5>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    className="btn-close"
+                                                    onClick={() => setSelectedPaymentMethod(null)}
+                                                    style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.1))' }}
+                                                ></button>
+                                            </div>
+                                            <div className="modal-body p-4">
+                                                {selectedPaymentMethod.tipo === 'ZELLE' ? (
+                                                    <div className="row g-3">
+                                                        <div className="col-12">
+                                                            <div
+                                                                className="card border-light bg-light cursor-pointer"
+                                                                onClick={() => {
+                                                                    navigator.clipboard.writeText(selectedPaymentMethod.titular);
+                                                                }}
+                                                                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
+                                                            >
+                                                                <div className="card-body p-3">
+                                                                    <div className="d-flex align-items-center justify-content-between mb-2">
+                                                                        <div className="d-flex align-items-center gap-2">
+                                                                            <i className="fa-solid fa-user text-danger fs-5"></i>
+                                                                            <label className="form-label fw-bold text-danger mb-0">
+                                                                                Titular de Cuenta
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <p className="text-dark mb-0 fs-5 fw-500">
+                                                                        {selectedPaymentMethod.titular}
+                                                                    </p>
+                                                                    <small className="text-muted mt-1 d-block">
+                                                                        <i className="fa-solid fa-click"></i> Toca para copiar
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-12">
+                                                            <div
+                                                                className="card border-light bg-light cursor-pointer"
+                                                                onClick={() => {
+                                                                    navigator.clipboard.writeText(selectedPaymentMethod.contacto);
+                                                                }}
+                                                                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
+                                                            >
+                                                                <div className="card-body p-3">
+                                                                    <div className="d-flex align-items-center justify-content-between mb-2">
+                                                                        <div className="d-flex align-items-center gap-2">
+                                                                            <i className="fa-solid fa-envelope text-danger fs-5"></i>
+                                                                            <label className="form-label fw-bold text-danger mb-0">
+                                                                                Email o Teléfono
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <p className="text-dark mb-0 fs-5 fw-500">
+                                                                        {selectedPaymentMethod.contacto}
+                                                                    </p>
+                                                                    <small className="text-muted mt-1 d-block">
+                                                                        <i className="fa-solid fa-click"></i> Toca para copiar
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-12">
+                                                            <div className="alert alert-info border-0 bg-light-info text-info" role="alert">
+                                                                <i className="fa-solid fa-circle-info me-2"></i>
+                                                                <small>Copia esta información y realiza el pago por Zelle</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="row g-3">
+                                                        <div className="col-12">
+                                                            <div
+                                                                className="card border-light bg-light cursor-pointer"
+                                                                onClick={() => {
+                                                                    navigator.clipboard.writeText(selectedPaymentMethod.titular);
+                                                                }}
+                                                                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
+                                                            >
+                                                                <div className="card-body p-3">
+                                                                    <div className="d-flex align-items-center justify-content-between mb-2">
+                                                                        <div className="d-flex align-items-center gap-2">
+                                                                            <i className="fa-solid fa-user text-danger fs-5"></i>
+                                                                            <label className="form-label fw-bold text-danger mb-0">
+                                                                                Titular de Cuenta
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <p className="text-dark mb-0 fs-5 fw-500">
+                                                                        {selectedPaymentMethod.titular}
+                                                                    </p>
+                                                                    <small className="text-muted mt-1 d-block">
+                                                                        <i className="fa-solid fa-click"></i> Toca para copiar
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-12">
+                                                            <div
+                                                                className="card border-light bg-light cursor-pointer"
+                                                                onClick={() => {
+                                                                    navigator.clipboard.writeText(selectedPaymentMethod.ruta);
+                                                                }}
+                                                                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
+                                                            >
+                                                                <div className="card-body p-3">
+                                                                    <div className="d-flex align-items-center justify-content-between mb-2">
+                                                                        <div className="d-flex align-items-center gap-2">
+                                                                            <i className="fa-solid fa-code text-danger fs-5"></i>
+                                                                            <label className="form-label fw-bold text-danger mb-0">
+                                                                                Número de Ruta
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <p className="text-dark mb-0 fs-5 fw-500">
+                                                                        {selectedPaymentMethod.ruta}
+                                                                    </p>
+                                                                    <small className="text-muted mt-1 d-block">
+                                                                        <i className="fa-solid fa-click"></i> Toca para copiar
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-12">
+                                                            <div
+                                                                className="card border-light bg-light cursor-pointer"
+                                                                onClick={() => {
+                                                                    navigator.clipboard.writeText(selectedPaymentMethod.cuenta);
+                                                                }}
+                                                                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
+                                                            >
+                                                                <div className="card-body p-3">
+                                                                    <div className="d-flex align-items-center justify-content-between mb-2">
+                                                                        <div className="d-flex align-items-center gap-2">
+                                                                            <i className="fa-solid fa-calculator text-danger fs-5"></i>
+                                                                            <label className="form-label fw-bold text-danger mb-0">
+                                                                                Número de Cuenta
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <p className="text-dark mb-0 fs-5 fw-500">
+                                                                        {selectedPaymentMethod.cuenta}
+                                                                    </p>
+                                                                    <small className="text-muted mt-1 d-block">
+                                                                        <i className="fa-solid fa-click"></i> Toca para copiar
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-12">
+                                                            <div className="alert alert-info border-0 bg-light-info text-info" role="alert">
+                                                                <i className="fa-solid fa-circle-info me-2"></i>
+                                                                <small>Copia esta información y realiza la transferencia bancaria</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="modal-footer border-top-0 p-4">
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline-danger rounded-3 px-4"
+                                                    onClick={() => setSelectedPaymentMethod(null)}
+                                                >
+                                                    <i className="fa-solid fa-check me-2"></i>
+                                                    Entendido
+                                                </button>
                                             </div>
                                         </div>
-                                    ))}
+                                    </div>
                                 </div>
-                            </div>
-
+                            )}
+                            {/*comprobante de pago */}
                             <div className="text-center my-4">
                                 <h1 className="text-start mb-3 text-danger fw-bold" style={{ fontSize: "clamp(20px, 4vw, 28px)" }}>
                                     <i className="fa-solid fa-file-lines me-2"></i>COMPROBANTE DE PAGO
@@ -450,8 +941,8 @@ export const ComprarTicket = () => {
                                                 <img
                                                     src={preview}
                                                     alt="Vista previa del comprobante"
-                                                    className="img-fluid rounded-5"
-                                                    style={{ maxWidth: '150px', boxShadow: '0 2px 20px rgba(217,4,41,0.2)' }}
+                                                    className="img-fluid rounded-5 opacity-75"
+                                                    style={{ maxWidth: '150px', filter: 'drop-shadow(0 2px 20px rgba(217,4,41,0.2))' }}
                                                 />
                                                 <button
                                                     type="button"
@@ -460,8 +951,9 @@ export const ComprarTicket = () => {
                                                     onClick={() => {
                                                         setPreview(null);
                                                         setFormData({ ...formData, comprobante: null });
-                                                        const fileInput = document.getElementById('comprobante');
-                                                        if (fileInput) fileInput.value = '';
+                                                        if (fileInputRef.current) {
+                                                            fileInputRef.current.value = '';
+                                                        }
                                                     }}
                                                 >
                                                     <i className="fa-solid fa-times"></i>
@@ -471,6 +963,7 @@ export const ComprarTicket = () => {
                                     </div>
                                     <div className="col-12 col-md-8 d-flex flex-column justify-content-center">
                                         <input
+                                            ref={fileInputRef}
                                             id="comprobante"
                                             type="file"
                                             className="form-control rounded-3"
@@ -486,12 +979,11 @@ export const ComprarTicket = () => {
                                     </p>
                                 </div>
                             </div>
-
                             <div className="text-center my-4">
                                 <h6 className="text-center text-muted mb-3">Al confirmar autorizo el uso de Mis Datos Personales</h6>
                                 <button
                                     type="submit"
-                                    className="btn btn-danger btn-lg px-4 px-md-5 w-100 w-md-auto"
+                                    className="btn btn-danger rounded-5 px-5"
                                     disabled={ticketsSeleccionados.length === 0}
                                 >
                                     <i className="fa-solid fa-check me-2"></i>
@@ -502,14 +994,7 @@ export const ComprarTicket = () => {
                     </form>
                 </div>
             </div>
-
-            <style>{`
-                .hover-container:hover .hover-button {
-                    opacity: 1 !important;
-                }
-            `}</style>
         </div>
     );
 };
-
 export default ComprarTicket;

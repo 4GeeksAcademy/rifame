@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import  useGlobalReducer  from "../hooks/useGlobalReducer";
-import { getRifas } from "../actions.js";
+
+const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Dashboard = () => {
     const { store, dispatch } = useGlobalReducer();
@@ -14,15 +15,44 @@ const Dashboard = () => {
         pagosPendientes: 0
     });
 
+    const getRifas = async (dispatch, userId, token) => {
+      try {
+        const response = await fetch(`${API_URL}/api/rifa/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+    
+          dispatch({
+            type: "set_rifas",
+            payload: data,
+          });
+    
+          return { success: true, data };
+        }
+    
+        if (response.status === 401) {
+          dispatch({ type: "logout" });
+          return { success: false, message: "Sesión expirada", expired: true };
+        }
+    
+        return { success: false, message: "Error al obtener rifas" };
+      } catch (error) {
+        console.error("Error:", error);
+        return { success: false, message: "Error de conexión" };
+      }
+    };
+
     useEffect(() => {
-        // Obtener rifas del usuario
         if (user) {
             getRifas(dispatch, user.id, store.token);
         }
     }, [user]);
 
     useEffect(() => {
-        // Calcular estadísticas
         const totalRifas = rifas.length;
         const rifasActivas = rifas.filter(rifa => new Date(rifa.fecha_sorteo) > new Date()).length;
         const totalVentas = rifas.reduce((sum, rifa) => sum + (rifa.tickets_vendidos || 0), 0);
@@ -142,9 +172,9 @@ const Dashboard = () => {
                                     </Link>
                                 </div>
                                 <div className="col-md-3 col-sm-6">
-                                    <Link to="/pagos" className="btn btn-outline-success w-100">
-                                        <i className="fa-solid fa-money-bill me-2"></i>
-                                        Ver Pagos
+                                    <Link to="/clientes" className="btn btn-outline-success w-100">
+                                        <i className="fa-solid fa-users me-2"></i>
+                                        Ver Mis Clientes
                                     </Link>
                                 </div>
                                 <div className="col-md-3 col-sm-6">
@@ -161,7 +191,7 @@ const Dashboard = () => {
 
             {/* Rifas Recientes */}
             <div className="row">
-                <div className="col-12">
+                <div className="col-12 mb-4">
                     <div className="card border-0 shadow-sm">
                         <div className="card-body">
                             <div className="d-flex justify-content-between align-items-center mb-3">
@@ -211,16 +241,17 @@ const Dashboard = () => {
                                                         <td>{rifa.cantidad_tickets}</td>
                                                         <td>{new Date(rifa.fecha_sorteo).toLocaleDateString()}</td>
                                                         <td>
-                                                            <span className={`badge ${activa ? 'bg-success' : 'bg-secondary'}`}>
+                                                            <span className={`badge rounded-5 ${activa ? 'bg-success' : 'bg-secondary'}`}>
                                                                 {activa ? 'Activa' : 'Finalizada'}
                                                             </span>
                                                         </td>
                                                         <td>
                                                             <Link 
-                                                                to={`/rifa/${rifa.id}`} 
-                                                                className="btn btn-sm btn-outline-primary"
+                                                                to={`/comprar-ticket/${rifa.id}`}
+                                                                className="btn btn-sm btn-outline-success rounded-5"
                                                             >
-                                                                Ver
+                                                                <i className="fa-solid fa-ticket me-1"></i>
+                                                                Vender
                                                             </Link>
                                                         </td>
                                                     </tr>
