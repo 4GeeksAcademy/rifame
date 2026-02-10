@@ -14,6 +14,7 @@ import RegistrodeUsuario from "./pages/RegistrodeUsuario.jsx";
 import SistemaPagina from "./pages/SistemaPagina.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 import MisRifas from "./components/MisRifas.jsx";
+import EditarUsuario from "./pages/EditarUsuario.jsx";
 // import Pagos from "./components/Pagos.jsx";
 
 
@@ -55,6 +56,7 @@ export const router = createBrowserRouter(
       {/* <Route path="/pagos" element={<Pagos />} /> */}
       <Route path="/admin-panel" element={<AdminPanel />} />
       <Route path="/detalle-rifa" element={<DetalleRifa />} />
+      <Route path="/editar-usuario/:id" element={<EditarUsuario />} /> 
     </Route>
   )
 )

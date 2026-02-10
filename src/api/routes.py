@@ -1,12 +1,15 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+import sys
 import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User, Rifa, Ticket
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
+from cloudinary_config import upload_image
 
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
@@ -158,6 +161,18 @@ def update_user(user_id):
     except IntegrityError:
         db.session.rollback()
         return jsonify({"message": "El correo electrónico ya existe."}), 400
+    
+@api.route("/upload/image", methods=["POST"])
+@jwt_required()  # Proteger esta ruta
+def upload_image_route():
+    user_id = get_jwt_identity()
+    file = request.files.get("file")
+    if not file:
+        return jsonify({"message": "No se ha proporcionado ningún archivo."}), 400
+    upload = upload_image(file, folder=f"rifas/user_{user_id}/perfil")
+    if not upload['success']:
+        return jsonify({"error": upload['error']}), 400
+    return jsonify({"url": upload["url"]}), 200
 
 
 # ==========================================

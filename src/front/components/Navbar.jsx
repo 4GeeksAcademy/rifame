@@ -186,6 +186,11 @@ export const Navbar = () => {
 												<i className="fa-solid fa-user me-2"></i>Mi Perfil
 											</Link>
 										</li>
+										<li>
+											<Link to={`/editar-usuario/${store.user?.id}`} className="dropdown-item">
+												<i className="fa-solid fa-pen-to-square me-2"></i>Editar Usuario
+											</Link>
+										</li>
 										{store.user?.admin && (
 											<>
 												<li><hr className="dropdown-divider" /></li>
