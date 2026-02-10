@@ -199,7 +199,9 @@ export const Navbar = () => {
 										data-bs-toggle="dropdown"
 										aria-expanded="false"
 									>
-										<i className="fa-solid fa-user-circle me-2"></i>
+										{store.user?.foto_perfil ? (<img src={store.user.foto_perfil} alt="Foto de perfil" className="rounded-circle me-2" style={{ width: '30px', height: '30px', objectFit: 'cover' }} />) : (
+											<i className="fa-solid fa-user-circle me-2"></i>
+										)}
 										{store.user?.nombre || "Usuario"}
 									</a>
 									<ul className="dropdown-menu dropdown-menu-end">

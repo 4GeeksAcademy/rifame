@@ -163,7 +163,8 @@ def update_user(user_id):
     except IntegrityError:
         db.session.rollback()
         return jsonify({"message": "El correo electrónico ya existe."}), 400
-    
+
+
 @api.route("/upload/image", methods=["POST"])
 @jwt_required()  # Proteger esta ruta
 def upload_image_route():
@@ -305,10 +306,17 @@ def eliminar_rifa(rifa_id):
         return jsonify({"message": "Rifa no encontrada o no tienes permiso"}), 404
 
     try:
-        # 1) Eliminar todos los tickets asociados primero
+        # 1) Obtener todos los tickets de la rifa
+        tickets = Ticket.query.filter_by(rifa_id=rifa_id).all()
+
+        # 2) Eliminar todos los compradores asociados a esos tickets
+        for ticket in tickets:
+            Comprador_ticket.query.filter_by(ticket_id=ticket.id).delete()
+
+        # 3) Eliminar todos los tickets
         Ticket.query.filter_by(rifa_id=rifa_id).delete()
 
-        # 2) Ahora eliminar la rifa
+        # 4) Ahora eliminar la rifa
         db.session.delete(rifa)
         db.session.commit()
 

@@ -81,6 +81,14 @@ const handleFileChange = async (e) => {
             },
             body: JSON.stringify({...formData, foto_perfil: fotoUrl })
         });
+
+        if (response.status === 401) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                window.location.href = "/login";
+                return;
+            }
+
         if (!res.ok) {
             alert("Error al actualizar usuario");
             return;

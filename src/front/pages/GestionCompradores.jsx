@@ -35,6 +35,13 @@ export const GestionCompradores = () => {
                 }
             });
 
+            if (response.status === 401) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                window.location.href = "/login";
+                return;
+            }
+
             if (response.ok) {
                 const data = await response.json();
                 setCompradores(data);
@@ -73,6 +80,13 @@ export const GestionCompradores = () => {
                 }
             });
 
+            if (response.status === 401) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                window.location.href = "/login";
+                return;
+            }
+
             if (response.ok) {
                 alert('Comprador verificado exitosamente');
                 fetchCompradores();
@@ -103,6 +117,13 @@ export const GestionCompradores = () => {
                     'Content-Type': 'application/json'
                 }
             });
+
+            if (response.status === 401) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                window.location.href = "/login";
+                return;
+            }
 
             if (response.ok) {
                 alert('Comprador rechazado y ticket liberado');
@@ -175,7 +196,7 @@ export const GestionCompradores = () => {
                                 <small className="text-muted">Rifa ID: {rifaId}</small>
                             </div>
                         </div>
-                        <button className="btn btn-success rounded-5" onClick={() => navigate(`/rifa-publica/${rifaId}`)}>
+                        <button className="btn btn-success rounded-5" onClick={() => navigate(`/comprar-ticket/${rifaId}`)}>
                             <i className="fa-solid fa-ticket me-2"></i>
                             Vender Tickets
                         </button>

@@ -19,6 +19,13 @@ const MisRifas = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+
+        if (response.status === 401) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                window.location.href = "/login";
+                return;
+            }
     
         if (response.ok) {
           const data = await response.json();
@@ -61,6 +68,13 @@ const MisRifas = () => {
                     "Authorization": `Bearer ${store.token}`
                 }
             });
+
+            if (response.status === 401) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                window.location.href = "/login";
+                return;
+            }
 
             if (!response.ok) {
                 throw new Error("Error al eliminar la rifa");
