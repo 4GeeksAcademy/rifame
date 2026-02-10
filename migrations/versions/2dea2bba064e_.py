@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: d17085b2759b
+Revision ID: 2dea2bba064e
 Revises: 
-Create Date: 2026-02-07 02:12:16.907813
+Create Date: 2026-02-10 03:12:41.469174
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'd17085b2759b'
+revision = '2dea2bba064e'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -41,7 +41,7 @@ def upgrade():
     sa.Column('loteria', sa.String(length=50), nullable=False),
     sa.Column('fecha_sorteo', sa.String(length=50), nullable=False),
     sa.Column('imagen', sa.String(length=255), nullable=True),
-    sa.Column('metodo_pagos', sa.String(length=100), nullable=True),
+    sa.Column('metodo_pagos', sa.String(length=500), nullable=True),
     sa.Column('titular_zelle', sa.String(length=100), nullable=True),
     sa.Column('contacto_zelle', sa.String(length=100), nullable=True),
     sa.Column('titular_transferencia', sa.String(length=100), nullable=True),
@@ -63,8 +63,10 @@ def upgrade():
     sa.Column('ticket_id', sa.Integer(), nullable=False),
     sa.Column('nombre_comprador', sa.String(length=100), nullable=False),
     sa.Column('email_comprador', sa.String(length=120), nullable=False),
+    sa.Column('pais_comprador', sa.String(length=50), nullable=True),
     sa.Column('telefono_comprador', sa.String(length=20), nullable=True),
     sa.Column('comprobante_pago', sa.String(length=255), nullable=True),
+    sa.Column('estado', sa.String(length=20), nullable=False),
     sa.ForeignKeyConstraint(['ticket_id'], ['ticket.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

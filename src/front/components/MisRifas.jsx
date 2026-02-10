@@ -14,7 +14,7 @@ const MisRifas = () => {
 
     const getRifas = async (dispatch, userId, token) => {
       try {
-        const response = await fetch(`${API_URL}/api/rifa/${userId}`, {
+        const response = await fetch(`${API_URL}api/rifa/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
