@@ -8,8 +8,7 @@ const EditarUsuario = () => {
      const CLOUDINARY_CLOUD_NAME = "dkkkjhhgl";
     const CLOUDINARY_UPLOAD_PRESET = "rifas_images";
 
-    console.log("USER EN LOCALSTORAGE", storedUser); 
-    console.log("USER ID", userId);     
+
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         nombre:"",
