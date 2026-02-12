@@ -18,6 +18,45 @@ from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 
 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+sender_email = os.getenv("SMTP_USERNAME")
+sender_password = os.getenv("SMTP_PASSWORD")
+smtp_host = os.getenv("SMTP_HOST")
+smtp_port = os.getenv("SMTP_PORT")
+
+def send_email(comprador_id, subject, text_content, html_content):
+    reciever_email = Comprador_ticket.query.filter_by(id=comprador_id).first().email_comprador
+    message = MIMEMultipart("alternative")
+    message["Subject"] = subject
+    message["From"] = sender_email
+    destinatarios = reciever_email.split(",")
+    
+    message["To"] = ", ".join(destinatarios)
+
+    text = text_content
+
+    part1 = MIMEText(text, "plain")
+
+    part2 = MIMEText(html_content, "html")
+
+    message.attach(part1)
+
+    message.attach(part2)
+
+    smtp_connection = smtplib.SMTP(smtp_host, smtp_port)
+
+    smtp_connection.starttls() # Secure the connection
+
+    smtp_connection.login(sender_email, sender_password)
+
+    smtp_connection.sendmail(sender_email, destinatarios, message.as_string())
+
+    smtp_connection.quit()
+
+
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
@@ -575,6 +614,18 @@ def verificar_comprador(comprador_id):
     # Cambiar estado a verificado
     comprador.estado = 'verificado'
     ticket.is_sold = True  # Confirmar que está vendido
+    send_email(
+        comprador_id,
+        "¡Tu compra ha sido verificada! - Rifame",
+        "¡Tu compra ha sido verificada! Gracias por comprar en Rifame.",
+        f"""
+            <html>
+                <body>
+                    <h1 style="color:green;">¡Tu compra ha sido verificada! 🎉</h1>
+                    <p>Gracias por comprar en <b>Rifame</b>. Tu ticket número {ticket.numero_ticket} para la rifa "{rifa.titulo}" ha sido verificado exitosamente.</p>
+                </body>            </html>
+        """
+    )
 
     try:
         db.session.commit()
@@ -607,6 +658,19 @@ def rechazar_comprador(comprador_id):
     # Cambiar estado a rechazado y liberar ticket
     comprador.estado = 'rechazado'
     ticket.is_sold = False  # Liberar el ticket para que pueda venderse de nuevo
+    send_email(
+        comprador_id,
+        "Compra rechazada - Rifame",
+        "Lamentamos informarte que tu compra ha sido rechazada. El ticket ha sido liberado y está disponible para otros compradores.",
+        f"""
+            <html>
+                <body>
+                    <h1 style="color:red;">Compra Rechazada</h1>
+                    <p>Lamentamos informarte que tu compra ha sido rechazada. El ticket número {ticket.numero_ticket} para la rifa "{rifa.titulo}" ha sido liberado y está disponible para otros compradores.</p>
+                </body>            
+            </html>
+        """
+    )
 
     try:
         db.session.commit()
@@ -661,3 +725,4 @@ def get_clientes_by_user(user_id):
             clientes_unicos[email]["rifas_compradas"] += 1
 
     return jsonify(list(clientes_unicos.values())), 200
+
