@@ -28,6 +28,7 @@ import GestionCompradores from "./pages/GestionCompradores.jsx";
 import Clientes from "./pages/Clientes.jsx";
 import VerDetalle from "./pages/VerDetalle.jsx";
 
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
@@ -48,6 +49,7 @@ export const router = createBrowserRouter(
       <Route path="/rifa/:rifaId/compradores" element={<GestionCompradores />} />
       <Route path="/clientes" element={<Clientes />} />
       <Route path="/perfil" element={<PerfilUsuario />} />
+      <Route path="/rifa/:rifaID" element={<VerDetalle />} />
     </Route>
   )
 )
