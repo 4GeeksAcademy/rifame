@@ -1,23 +1,47 @@
-
-*{
-    font-family: "Winky Sans", sans-serif;
+* {
+  font-family: "Winky Sans", sans-serif;
 }
 html {
   min-height: 100%;
   position: relative;
 }
-body { 
-    margin: 0;
+body {
+  margin: 0;
 }
-footer{
-    width: 100%;
-    margin-top: auto;
+footer {
+  width: 100%;
+  margin-top: auto;
 }
 .input-sin-estilos:focus {
-    outline: none;
-    box-shadow: none;
-    border-color: #d90429;
+  outline: none;
+  box-shadow: none;
+  border-color: #d90429;
 }
 .hover-container:hover .hover-button {
-    opacity: 0.9 !important;
+  opacity: 0.9 !important;
+}
+
+.faq-accordion-item {
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.faq-accordion-item:hover {
+  border-color: #d90429;
+  box-shadow: 0 12px 28px rgba(217, 4, 41, 0.22);
+}
+
+.faq-accordion-item .accordion-button:hover {
+  background-color: rgba(217, 4, 41, 0.08);
+}
+
+.faq-accordion-item .accordion-button:focus {
+  box-shadow: none;
+  border-color: #d90429;
+}
+
+.faq-accordion-item .accordion-button:not(.collapsed) {
+  color: #d90429;
+  background-color: rgba(217, 4, 41, 0.12);
 }

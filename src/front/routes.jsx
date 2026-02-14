@@ -13,6 +13,7 @@ import SistemaPagina from "./pages/SistemaPagina.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 import MisRifas from "./components/MisRifas.jsx";
 import EditarUsuario from "./pages/EditarUsuario.jsx";
+import PerfilUsuario from "./pages/PerfilUsuario.jsx";
 // import Pagos from "./components/Pagos.jsx";
 
 
@@ -46,7 +47,7 @@ export const router = createBrowserRouter(
       <Route path="/editar-usuario/:id" element={<EditarUsuario />} /> 
       <Route path="/rifa/:rifaId/compradores" element={<GestionCompradores />} />
       <Route path="/clientes" element={<Clientes />} />
-      <Route path="/rifa/:id" element={<VerDetalle />} />
+      <Route path="/perfil" element={<PerfilUsuario />} />
     </Route>
   )
 )

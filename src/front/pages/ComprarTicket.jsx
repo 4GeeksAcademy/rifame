@@ -380,7 +380,7 @@ export const ComprarTicket = () => {
                                 <p className="text-start text-muted mt-2">{rifa.descripcion}</p>
                             )}
                             <h3 className="text-start text-danger fw-bold mt-2 mb-0 fs-5 fs-md-4">
-                                Precio por Ticket: ${precioTicket} | Total de Tickets: {rifa.cantidad_tickets}
+                                Precio por Ticket: ${precioTicket} | Total de Tickets Disponibles: {tickets.filter(t => t.disponible).length}
                             </h3>
                         </div>
                     </div>

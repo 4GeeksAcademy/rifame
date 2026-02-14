@@ -60,6 +60,8 @@ export const GestionCompradores = () => {
         }
     };
 
+    
+
     const verificarComprador = async (compradorId) => {
         const token = localStorage.getItem('token');
         if (!token) {

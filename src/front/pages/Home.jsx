@@ -66,7 +66,7 @@ export const Home = () => {
 					<h6 className="text-start mb-5">PLATAFORMA COMPLETA</h6>
 					<h2 className="text-start text-lg-center mb-4" style={{ color: "#d90429", fontWeight: "bold", fontSize: "clamp(24px, 4vw, 40px)" }}>Nuestro Sistema te brinda</h2>
 					<div className="accordion" id="faqAccordion">
-						<div className="accordion-item rounded-2 mb-3 border">
+						<div className="accordion-item rounded-2 mb-3 border faq-accordion-item">
 							<h2 className="accordion-header" id="headingOne">
 								<button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
 									Página Web Online
@@ -78,7 +78,7 @@ export const Home = () => {
 								</div>
 							</div>
 						</div>
-						<div className="accordion-item rounded-2 mb-3 border">
+						<div className="accordion-item rounded-2 mb-3 border faq-accordion-item">
 							<h2 className="accordion-header" id="headingTwo">
 								<button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
 									Panel de Administración
@@ -90,7 +90,7 @@ export const Home = () => {
 								</div>
 							</div>
 						</div>
-						<div className="accordion-item rounded-2 mb-3 border">
+						<div className="accordion-item rounded-2 mb-3 border faq-accordion-item">
 							<h2 className="accordion-header" id="headingThree">
 								<button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
 									Múltiples Configuraciones
@@ -102,7 +102,7 @@ export const Home = () => {
 								</div>
 							</div>
 						</div>
-						<div className="accordion-item rounded-2 mb-3 border">
+						<div className="accordion-item rounded-2 mb-3 border faq-accordion-item">
 							<h2 className="accordion-header" id="headingFour">
 								<button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
 									Verificador de Tickets
