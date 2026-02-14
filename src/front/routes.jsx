@@ -25,6 +25,7 @@ import ComprarTicket from "./pages/ComprarTicket.jsx";
 import AdminPanel from "./pages/AdminPanel.jsx";
 import GestionCompradores from "./pages/GestionCompradores.jsx";
 import Clientes from "./pages/Clientes.jsx";
+import VerDetalle from "./pages/VerDetalle.jsx";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -45,6 +46,7 @@ export const router = createBrowserRouter(
       <Route path="/editar-usuario/:id" element={<EditarUsuario />} /> 
       <Route path="/rifa/:rifaId/compradores" element={<GestionCompradores />} />
       <Route path="/clientes" element={<Clientes />} />
+      <Route path="/rifa/:id" element={<VerDetalle />} />
     </Route>
   )
 )

@@ -133,16 +133,16 @@ export const Navbar = () => {
 											</Link>
 										</li>
 										<li>
-											<a className="dropdown-item" href="#">Dominio Web Propio</a>
+											<a className="dropdown-item" href="#dominio">Dominio Web Propio</a>
 										</li>
 										<li>
-											<a className="dropdown-item" href="#">Sistema de Pagos</a>
+											<a className="dropdown-item" href="#descuentos">Sistema de Descuentos</a>
 										</li>
 										<li>
-											<a className="dropdown-item" href="#">Sistema de Vendedores</a>
+											<a className="dropdown-item" href="#vendedores">Sistema de Vendedores</a>
 										</li>
 										<li>
-											<a className="dropdown-item" href="#">Carga de Comprobante</a>
+											<a className="dropdown-item" href="#voucher">Carga de Voucher</a>
 										</li>
 									</ul>
 								</li>
