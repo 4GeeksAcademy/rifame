@@ -13,7 +13,7 @@ const Configuracion = () => {
                 </div>
             </section>
 
-            <section className="container px-3 px-md-4 pb-5">    
+            <section id="dominio" className="container px-3 px-md-4 pb-5">    
                 <div className="row g-4">
                     <div className="col-12 col-lg-8">
                         <h5 className="text-dark mb-4">Opciones Configurables en el sistema</h5>
@@ -30,163 +30,78 @@ const Configuracion = () => {
                         </div>
                     </div>
                     <div className="col-12 col-lg-4 d-flex align-items-center justify-content-center">
-                        <h2 className="text-success text-opacity-25 text-center">Aquí va la imagen de la sección de configuraciones</h2>
+                        <h2 className="text-success text-opacity-25"><img src= "https://img.icons8.com/fluent-systems-filled/512w/FA5252/domain.png" style={{ width: "100px", height: "100px", color:"#f50b22"}}/></h2>
                     </div>
                 </div>                
             </section>
 
-            <section className="container px-3 px-md-4 pb-5">
-                <div className="row g-4">
-                    <div className="col-12 col-lg-8">
-                        <div>
-                            <p className="fs-6 fs-md-5 text-danger pb-2 mb-0">ELEGIBLE</p>
-                            <h2 className="mb-4 text-secondary" style={{fontSize: "clamp(20px, 4vw, 32px)"}}>Campos Adicionales</h2>
-                            <p className="text-secondary fs-6 fs-md-5">
-                                Agrega campos adicionales al formulario de registro para recopilar información específica de tus usuarios. 
-                                <ul className="ms-3 mt-3">
-                                    <li>Visible desde el Panel de Admin.</li>
-                                    <li>Descargable en el Reporte</li>
-                                    <li>Estadísticas de Uso</li>
-                                </ul>                
-                            </p>
-                        </div>
-                    </div>
-                    <div className="col-12 col-lg-4 d-flex align-items-center justify-content-center">
-                        <h2 className="text-success text-opacity-25 text-center">Aquí va la imagen de la sección DE ELEGIBLE</h2>
-                    </div>
-                </div>  
-            </section>
-
-            <section className="container px-3 px-md-4 pb-5">
-                <div className="row g-4">
-                    <div className="col-12 col-lg-8">
-                        <div>
-                            <p className="fs-6 fs-md-5 text-danger pb-2 mb-0">AUTOMATICO</p>
-                            <h2 className="mb-4 text-secondary" style={{fontSize: "clamp(20px, 4vw, 32px)"}}>Múltiples Medios de Pagos</h2>
-                            <p className="text-secondary fs-6 fs-md-5">
-                                Pagos por transferencia ó depósito con Voucher <span className="text-danger fw-bold">(comprobante)</span> y pago online con verificación automática.
-                                <ul className="ms-3 mt-3">
-                                    <li>Pago con Pasarela de Pagos de Mercado Pago.</li>
-                                    <li>Pago con Tarjeta</li>
-                                    <li>Pago con PayPal (según disponibilidad)</li>
-                                </ul>                
-                            </p>
-                        </div>
-                    </div>
-                    <div className="col-12 col-lg-4 d-flex align-items-center justify-content-center">
-                        <h2 className="text-success text-opacity-25 text-center">Aquí va la imagen de la sección de AUTOMATICO</h2>
-                    </div>
-                </div>  
-            </section>
-
-            <section className="container px-3 px-md-4 pb-5">
-                <div className="row g-4">
-                    <div className="col-12 col-lg-8">
-                        <div>
-                            <p className="fs-6 fs-md-5 text-danger pb-2 mb-0">PORCENTAJE VENDIDO</p>
-                            <h2 className="mb-4 text-secondary" style={{fontSize: "clamp(20px, 4vw, 32px)"}}>Barra de Progreso</h2>
-                            <p className="text-secondary fs-6 fs-md-5">
-                                Puedes configurar tu rifa condicionada a la venta del 80%, 90% o 100% de boletos. (Aplican restricciones)
-                                <ul className="ms-3 mt-3">
-                                    <li>Se ocultan fechas</li>
-                                    <li>Se muestra arriba de la descripción</li>
-                                </ul>                
-                            </p>
-                        </div>
-                    </div>
-                    <div className="col-12 col-lg-4 d-flex align-items-center justify-content-center">
-                        <h2 className="text-success text-opacity-25 text-center">Aquí va la imagen de la sección de PORCENTAJE VENDIDO</h2>
-                    </div>
-                </div>  
-            </section>
-
-            <section className="container px-3 px-md-4 pb-5">
-                <div className="row g-4">
-                    <div className="col-12 col-lg-8">
-                        <div>
-                            <p className="fs-6 fs-md-5 text-danger pb-2 mb-0">PERSONALIZACIONES</p>
-                            <h2 className="mb-4 text-secondary" style={{fontSize: "clamp(20px, 4vw, 32px)"}}>Textos Personalizados</h2>
-                            <p className="text-secondary fs-6 fs-md-5">
-                                Podrás configurar el texto de algunos títulos, acciones y botones de su landing page.
-                                <ul className="ms-3 mt-3">
-                                    <li>Título de Formulario.</li>
-                                    <li>Check de envío de voucher.</li>
-                                    <li>Botón de Aleatorio…</li>
-                                </ul>                
-                            </p>
-                        </div>
-                    </div>
-                    <div className="col-12 col-lg-4 d-flex align-items-center justify-content-center">
-                        <h2 className="text-success text-opacity-25 text-center">Aquí va la imagen de la sección de PERSONALIZACIONES</h2>
-                    </div>
-                </div>  
-            </section>
-
-            <section className="container px-3 px-md-4 pb-5">
-                <div className="row g-4">
-                    <div className="col-12 col-lg-8">
-                        <div>
-                            <p className="fs-6 fs-md-5 text-danger pb-2 mb-0">NUMEROS DE REGALO</p>
-                            <h2 className="mb-4 text-secondary" style={{fontSize: "clamp(20px, 4vw, 32px)"}}>Sistema de Oportunidades</h2>
-                            <p className="text-secondary fs-6 fs-md-5">
-                                Elige la cantidad de tickets de regalo que tendrán tus usuarios eligiendo un boleto.
-                                <ul className="ms-3 mt-3">
-                                    <li>Cualquier Numeración.</li>
-                                    <li>Cualquier Configuración.</li>
-                                    <li>Facilita la elección de Tickets</li>
-                                </ul>                
-                            </p>
-                        </div>
-                    </div>
-                    <div className="col-12 col-lg-4 d-flex align-items-center justify-content-center">
-                        <h2 className="text-success text-opacity-25 text-center">Aquí va la imagen de la sección de NUMEROS DE REGALO</h2>
-                    </div>
-                </div>  
-            </section>
-
-            <section className="container px-3 px-md-4 pb-5">
+            <section id="descuentos" className="container px-3 px-md-4 pb-5">
                 <div className="row g-4">
                     <div className="col-12 col-lg-8">
                         <div>
                             <p className="fs-6 fs-md-5 text-danger pb-2 mb-0">VENDE MAS TICKETS</p>
                             <h2 className="mb-4 text-secondary" style={{fontSize: "clamp(20px, 4vw, 32px)"}}>Sistema de Descuentos</h2>
                             <p className="text-secondary fs-6 fs-md-5">
-                                Gracias a nuestro algoritmo puedes configurar a tu gusto el porcentaje de descuentos.
+                                Gracias a nuestro algoritmo puedes configurar a tu gusto el porcentaje de descuentos. 
                                 <ul className="ms-3 mt-3">
-                                    <li>Tablero de precios.</li>
-                                    <li>Previsualización de costos.</li>
+                                    <li>Tablero de Precios</li>
+                                    <li>Previsualización de costos</li>
                                     <li>A más tickets mayor descuento</li>
                                 </ul>                
                             </p>
                         </div>
                     </div>
                     <div className="col-12 col-lg-4 d-flex align-items-center justify-content-center">
-                        <h2 className="text-success text-opacity-25 text-center">Aquí va la imagen de la sección de VENDE MAS TICKETS</h2>
+                        <h2 className="text-success text-opacity-25"><img src= "https://cdn-icons-png.flaticon.com/512/726/726476.png" style={{ width: "100px", height: "100px", color:"#f50b22"}}/></h2>
                     </div>
                 </div>  
             </section>
 
-            <section className="container px-3 px-md-4 pb-5">
+            <section id="vendedores" className="container px-3 px-md-4 pb-5">
                 <div className="row g-4">
                     <div className="col-12 col-lg-8">
                         <div>
-                            <p className="fs-6 fs-md-5 text-danger pb-2 mb-0">OFERTAS DE BOLETOS</p>
-                            <h2 className="mb-4 text-secondary" style={{fontSize: "clamp(20px, 4vw, 32px)"}}>Sistema de Promociones</h2>
+                            <p className="fs-6 fs-md-5 text-danger pb-2 mb-0">VENDE MAS RAPIDO</p>
+                            <h2 className="mb-4 text-secondary" style={{fontSize: "clamp(20px, 4vw, 32px)"}}>Sistema de Vendedores</h2>
                             <p className="text-secondary fs-6 fs-md-5">
-                                Podrás ofrecer promociones de 2×1 (comprando un boleto el segundo es gratis), 3×2, 4×3, 5×4…
+                                Podrás tener múltiples vendedores con 2 modalidades de funcionamiento.
                                 <ul className="ms-3 mt-3">
-                                    <li>Descuento en el precio al instante.</li>
-                                    <li>Descuento en el precio al instante.</li>
-                                    <li>Se puede actualizar en cualquier momento.</li>
+                                    <li>Primera modalidad con Usuario propio.</li>
+                                    <li>Segunda modalidad sin Usuario (Campo libre ó Selección de Vendedores)</li>
+                                    <li>En ambos casos el administrador tendrá la información.</li>
                                 </ul>                
                             </p>
                         </div>
                     </div>
                     <div className="col-12 col-lg-4 d-flex align-items-center justify-content-center">
-                        <h2 className="text-success text-opacity-25 text-center">Aquí va la imagen de la sección de OFERTAS DE BOLETOS</h2>
+                        <h2 className="text-success text-opacity-25"><img src= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPVjYgFKysqLvhk3prKvkA-PjQNW1Pdzi8-w&s" style={{ width: "100px", height: "100px", color:"#f50b22"}}/></h2>
                     </div>
                 </div>  
-            </section>         
+            </section>
+
+            <section id="voucher"className="container px-3 px-md-4 pb-5">
+                <div className="row g-4">
+                    <div className="col-12 col-lg-8">
+                        <div>
+                            <p className="fs-6 fs-md-5 text-danger pb-2 mb-0">IMAGEN</p>
+                            <h2 className="mb-4 text-secondary" style={{fontSize: "clamp(20px, 4vw, 32px)"}}>Carga de Voucher</h2>
+                            <p className="text-secondary fs-6 fs-md-5">
+                                Podrás elegir si tus participantes deben subir el comprobante al sistema o lo envíen a WhatsApp
+                                <ul className="ms-3 mt-3">
+                                    <li>Comprobante para verificar</li>
+                                    <li>Como respaldo si pierdes tu WhatsApp</li>
+                                    <li>Accesible desde el Panel del Admin</li>
+                                </ul>                
+                            </p>
+                        </div>
+                    </div>
+                    <div className="col-12 col-lg-4 d-flex align-items-center justify-content-center">
+                        <h2 className="text-success text-opacity-25"><img src= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyB6vcdKgDEqG_twAZopFgGXn1dbzdcUsWGQ&s" style={{ width: "100px", height: "100px", color:"#f50b22"}}/></h2>
+                    </div>
+                </div>  
+            </section>
+
+           
         </div>
     );
 }

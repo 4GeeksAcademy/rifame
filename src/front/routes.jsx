@@ -26,6 +26,7 @@ import ComprarTicket from "./pages/ComprarTicket.jsx";
 import AdminPanel from "./pages/AdminPanel.jsx";
 import GestionCompradores from "./pages/GestionCompradores.jsx";
 import Clientes from "./pages/Clientes.jsx";
+import VerDetalle from "./pages/VerDetalle.jsx";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
