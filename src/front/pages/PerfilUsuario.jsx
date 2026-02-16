@@ -108,18 +108,18 @@ const PerfilUsuario = () => {
             
                         <div className="col-12 col-sm-6">
                             <p className="text-muted mb-1">Apellido:</p>
-                            <p className="mb-0">{user.apellido}</p>
+                            <p className="fw-bold">{user.apellido}</p>
                         </div>
                      </div>
 
                   <div className="row mb-3">
                         <div className="col-md-6">
                             <p className="text-muted mb-1">Email:</p>
-                            <p className="mb-0">{user.email}</p>
+                            <p className="fw-bold">{user.email}</p>
                         </div>
                         <div className="col-12 col-sm-6">
                             <p className="text-muted mb-1">Teléfono:</p>
-                            <p className="mb-0">{user.telefono || "No proporcionado"}</p>
+                            <p className="fw-bold">{user.telefono || "No proporcionado"}</p>
                         </div>
                   </div>
                      <div>

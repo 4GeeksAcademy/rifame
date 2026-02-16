@@ -27,6 +27,13 @@ const EditarRifa = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState("");
+    const [uploading, setUploading] = useState(false);
+
+    const CLOUDINARY_CLOUD_NAME = "dkkkjhhgl";
+    const CLOUDINARY_UPLOAD_PRESET = "rifas_images";
+
 
     useEffect(() => {
         const fetchRifa = async () => {
@@ -76,9 +83,8 @@ const EditarRifa = () => {
                     numeroCuenta: rifa.numero_cuenta || ""
                 });
 
-                if (rifa.imagen) {
-                    setImageUrl(rifa.imagen);
-                }
+                setImageUrl(rifa.imagen || "");
+
             } catch (err) {
                 console.error(err);
                 setError("Error al cargar la rifa");
@@ -89,88 +95,169 @@ const EditarRifa = () => {
         fetchRifa();
     }, [id, token, API_URL]);
 
-const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-};
-const handleMetodoPagoChange = (metodo) => {
-    setFormData(prev => {
-        const yaSeleccionado = prev.metodoPagos.includes(metodo);
-        return {
-            ...prev,
-            metodoPagos: yaSeleccionado
-                ? prev.metodoPagos.filter(m => m !== metodo)
-                : [...prev.metodoPagos, metodo]
-        };
-    });
-};
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+    const handleMetodoPagoChange = (metodo) => {
+        setFormData(prev => {
+            const yaSeleccionado = prev.metodoPagos.includes(metodo);
+            return {
+                ...prev,
+                metodoPagos: yaSeleccionado
+                    ? prev.metodoPagos.filter(m => m !== metodo)
+                    : [...prev.metodoPagos, metodo]
+            };
+        });
+    };
 
-const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+    const handleImageChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-    try {
-        const requestBody = {
-            titulo: formData.tituloRifa,
-            descripcion: formData.descripcionRifa,
-            precio_ticket: parseFloat(formData.precioTicket),
-            cantidad_tickets: parseInt(formData.cantidadTickets),
-            loteria: formData.loteria,
-            fecha_sorteo: formData.fechaSorteo,
-            metodo_pagos: formData.metodoPagos.join(","),
-            imagen: imageUrl || null,
-            titular_zelle: formData.metodoPagos.includes("ZELLE") ? formData.titularZelle : null,
-            contacto_zelle: formData.metodoPagos.includes("ZELLE") ? formData.contactoZelle : null,
-            titular_transferencia: formData.metodoPagos.includes("Transferencia-Bancaria") ? formData.titularTransferencia : null,
-            numero_ruta: formData.metodoPagos.includes("Transferencia-Bancaria") ? formData.numeroRuta : null,
-            numero_cuenta: formData.metodoPagos.includes("Transferencia-Bancaria") ? formData.numeroCuenta : null
-        };
-        const response = await fetch(`${API_URL}/api/rifa/${id}/editar`, 
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(requestBody)
-            });
-        const data = await response.json();
-        if (response.ok) {
-            alert("Rifa actualizada exitosamente");
-            navigate("/mis-rifas");
-
-        } else {
-            setError(data.message || "Error al actualizar la rifa");
+        if (file.size > 5 * 1024 * 1024) {
+            setError("La imagen no puede superar 5MB");
+            return;
         }
-    } catch (err) {
-        console.error(err);
-        setError("Error al conectar al servidor");
-    } finally {
-        setLoading(false);
-    }
-};
 
-return (
-    <div className="container mt-5" style={{ maxWidth: "600px" }}>
-        <h1 className="text-center text-danger mb-4">
-            Editar Rifa
-        </h1>
-        {error && (
-            <div className="alert alert-danger">
-                {error}
-            </div>
-        )}
-        {imageUrl && (
-            <div className="mb-3 text-center">
-                <img src={imageUrl}
-                    alt="Imagen de la rifa"
-                    className="img-fluid rounded"
-                    style={{ maxHeight: "300px", objectFit: "cover" }}
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+            setError("Solo se permiten imágenes JPG, PNG o WEBP");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagePreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+
+        setImageFile(file);
+        await uploadImageToCloudinary(file);
+    };
+
+    const uploadImageToCloudinary = async (file) => {
+        setUploading(true);
+        setError("");
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+        formData.append("folder", "rifas");
+
+        try {
+            const response = await fetch(
+                `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.secure_url) {
+                setImageUrl(data.secure_url);
+                setUploading(false);
+            } else {
+                throw new Error("Error al subir la imagen");
+            }
+        } catch (error) {
+            console.error("Error al subir imagen:", error);
+            setError("Error al subir la imagen");
+            setUploading(false);
+        }
+    };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
+        setLoading(true);
+
+        if (imageFile && !imageUrl) {
+            setError("Espera a que termine de subir la imagen...");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const requestBody = {
+                titulo: formData.tituloRifa,
+                descripcion: formData.descripcionRifa,
+                precio_ticket: parseFloat(formData.precioTicket),
+                cantidad_tickets: parseInt(formData.cantidadTickets),
+                loteria: formData.loteria,
+                fecha_sorteo: formData.fechaSorteo,
+                metodo_pagos: formData.metodoPagos.join(","),
+                imagen: imageUrl || null,
+                titular_zelle: formData.metodoPagos.includes("ZELLE") ? formData.titularZelle : null,
+                contacto_zelle: formData.metodoPagos.includes("ZELLE") ? formData.contactoZelle : null,
+                titular_transferencia: formData.metodoPagos.includes("Transferencia-Bancaria") ? formData.titularTransferencia : null,
+                numero_ruta: formData.metodoPagos.includes("Transferencia-Bancaria") ? formData.numeroRuta : null,
+                numero_cuenta: formData.metodoPagos.includes("Transferencia-Bancaria") ? formData.numeroCuenta : null
+            };
+            const response = await fetch(`${API_URL}/api/rifa/${id}/editar`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+            const data = await response.json();
+            if (response.ok) {
+                alert("Rifa actualizada exitosamente");
+                navigate("/mis-rifas");
+
+            } else {
+                setError(data.message || "Error al actualizar la rifa");
+            }
+        } catch (err) {
+            console.error(err);
+            setError("Error al conectar al servidor");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="container mt-5" style={{ maxWidth: "600px" }}>
+            <h1 className="text-center text-danger mb-4">
+                Editar Rifa
+            </h1>
+            <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+                <label className="form-label text-center d-block">
+                    Imagen del Premio
+                </label>
+
+                {(imagePreview || imageUrl) && (
+                    <div className="mb-3 text-center">
+                        <img
+                            src={imagePreview || imageUrl}
+                            alt="Preview"
+                            className="img-fluid rounded border"
+                            style={{ maxWidth: "300px", maxHeight: "300px" }}
+                        />
+
+                        {uploading && (
+                            <div className="mt-2">
+                                <div className="spinner-border spinner-border-sm text-danger me-2"></div>
+                                <small>Subiendo imagen...</small>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                <input
+                    type="file"
+                    className="form-control"
+                    accept="image/jpeg,image/png,image/jpg,image/webp"
+                    onChange={handleImageChange}
+                    disabled={loading || uploading}
                 />
             </div>
-        )}
-        <form onSubmit={handleSubmit}>
+
             <div className="mb-3">
                 <label className="form-label">Título</label>
                 <input
@@ -268,8 +355,8 @@ return (
                 {loading ? "Actualizando..." : "Guardar Cambios"}
             </button>
         </form>
-    </div>
-);
+        </div >
+    );
 };
 
 export default EditarRifa;
