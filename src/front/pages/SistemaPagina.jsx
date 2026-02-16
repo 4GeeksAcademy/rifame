@@ -102,11 +102,11 @@ const SistemaPagina = () => {
                         Empieza a gestionar rifas de forma pro.
                     </p>
                     <Link
-                        to="/crear-rifa"
+                        to="/registro"
                         className="btn btn-light btn-lg rounded-5 px-4 px-md-5"
                         style={{ textDecoration: "none" }}
                     >
-                        Crear mi primera Rifa
+                        Regístrate Gratis!
                     </Link>
                 </div>
             </section>

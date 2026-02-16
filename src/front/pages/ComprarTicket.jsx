@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import RegistrodeUsuario from './RegistrodeUsuario';
 
 export const ComprarTicket = () => {
+
     const API_URL = import.meta.env.VITE_BACKEND_URL;
     const CLOUDINARY_CLOUD_NAME = "dkkkjhhgl";
     const CLOUDINARY_UPLOAD_PRESET = "comprobantes-pagos";
@@ -22,7 +24,6 @@ export const ComprarTicket = () => {
     const [pais, setPais] = useState({});
     const [busqueda, setBusqueda] = useState('');
     const [ticketEncontrado, setTicketEncontrado] = useState(null);
-    const [ultimaActualizacion, setUltimaActualizacion] = useState(null);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
     const pollingIntervalRef = useRef(null);
@@ -52,7 +53,6 @@ export const ComprarTicket = () => {
                 }));
 
                 setTickets(ticketsFormateados);
-                setUltimaActualizacion(new Date());
 
                 setTicketsSeleccionados(prev =>
                     prev.filter(numTicket => {
@@ -94,7 +94,6 @@ export const ComprarTicket = () => {
                             precio: rifaData.precio_ticket
                         }));
                         setTickets(ticketsFormateados);
-                        setUltimaActualizacion(new Date());
                     }
                     setError(null);
                 } else if (response.status === 404) {
@@ -122,7 +121,7 @@ export const ComprarTicket = () => {
         return () => clearInterval(pollingIntervalRef.current);
     }, [rifa, rifaId]);
 
-    const elegirASuerte = (total, limite) => {
+    const elegirASuerte = (limite) => {
         const seleccionados = new Set();
         const ticketsDisponibles = tickets.filter(t => t.disponible).map(t => t.numero);
 
@@ -182,7 +181,6 @@ export const ComprarTicket = () => {
             setPreview(objectUrl);
             setFormData(prev => ({ ...prev, comprobante: file }));
 
-            return () => URL.revokeObjectURL(objectUrl);
         }
     };
 
@@ -347,31 +345,18 @@ export const ComprarTicket = () => {
             {/* Detalles de la rifa */}
             <div className="container mt-5 px-3 px-md-4 mb-4">
                 <div className="row g-4">
-                    <button
-                        type="button"
-                        className="btn btn-link mb-3 d-flex p-0"
-                        onClick={() => window.history.back()}
-                    >
-                        <span className="text-danger fs-3">
-                            <i className="fa-solid fa-angle-left"></i>
-                        </span>
-                    </button>
                     <div className="col-12 col-lg-6 text-center">
                         <img
                             src={rifa.imagen || "https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770352480/rifas/m7j5drkngidad7fjgrfq.jpg"}
                             alt={rifa.titulo}
                             className="img-fluid rounded-5"
                             style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', maxWidth: '100%' }}
-                            onError={(e) => {
-                                e.target.src = "https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770352480/rifas/m7j5drkngidad7fjgrfq.jpg";
-                            }}
                         />
                     </div>
                     <div className="col-12 col-lg-6">
                         <div className="d-flex flex-column justify-content-center h-100">
-                            <h3 className="text-start text-danger fw-bold mt-2 mb-3 fs-5 fs-md-4">
-                                <i className="fa-regular fa-calendar-days"></i> {fechaSorteo.toLocaleDateString('es-ES')} |
-                                <i className="fa-solid fa-clock ms-2"></i> {fechaSorteo.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                            <h3 className="text-start text-muted fw-bold mt-2 mb-3 fs-5 fs-md-4">
+                                Resultados el {fechaSorteo.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })} a las {fechaSorteo.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })} por la loteria {rifa.loteria}
                             </h3>
                             <h1 className="text-start text-danger fw-bold" style={{ fontSize: "clamp(32px, 5vw, 48px)" }}>
                                 {rifa.titulo}
@@ -379,9 +364,18 @@ export const ComprarTicket = () => {
                             {rifa.descripcion && (
                                 <p className="text-start text-muted mt-2">{rifa.descripcion}</p>
                             )}
-                            <h3 className="text-start text-danger fw-bold mt-2 mb-0 fs-5 fs-md-4">
-                                Precio por Ticket: ${precioTicket} | Total de Tickets Disponibles: {tickets.filter(t => t.disponible).length}
+                            <h3 className="text-center text-muted fw-bold mt-2 mb-3 fs-5 fs-md-4 ">
+                                Precio por Ticket: ${precioTicket} | Tickets Disponibles: {tickets.filter(t => t.disponible).length}
                             </h3>
+                            <h4 className="text-start text-muted fw-bold mt-5 mb-3 fs-6 fs-md-5">
+                                ¿Cómo funciona?
+                            </h4>
+                            <ul className="text-start text-muted" style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
+                                <li className="mb-2">Selecciona tus tickets</li>
+                                <li className="mb-2">Llena el formulario de compra</li>
+                                <li className="mb-2">Sube tu comprobante de pago</li>
+                                <li className="mb-2">Recibe confirmación por email</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -475,7 +469,7 @@ export const ComprarTicket = () => {
                         )}
 
                         <button className="btn btn-outline-danger btn-lg mt-2 px-3 px-md-4 rounded-5" onClick={() => {
-                            const seleccionados = elegirASuerte(tickets.length, limitePersonalizado);
+                            const seleccionados = elegirASuerte(limitePersonalizado);
                             setTicketsSeleccionados(seleccionados);
                         }}>
                             <i className="fa-solid fa-fire"></i> Elegir a la suerte <i className="fa-solid fa-fire"></i>
