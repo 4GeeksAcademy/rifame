@@ -51,6 +51,7 @@ export const router = createBrowserRouter(
       <Route path="/clientes" element={<Clientes />} />
       <Route path="/perfil" element={<PerfilUsuario />} />
       <Route path="/rifa/:id/editar" element={<EditarRifa />} />
+      <Route path="/rifa/:id" element={<VerDetalle />} />
     </Route>
   )
 )
