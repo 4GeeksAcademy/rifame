@@ -1,9 +1,18 @@
 import { Link } from "react-router-dom";
+const fondo1 = "/red_wavy_with_halftone_background.jpg";
 
 
 const SistemaPagina = () => {
     return (
         <>
+         <section>
+                    <div
+                        className="d-flex justify-content-center align-items-center bg-opacity-50 gt3-page-title_wrapper mb-1"
+                        style={{ height: "200px", backgroundImage: `url(${fondo1})`, backgroundSize: "cover", backgroundPosition: "center" }} >
+                        <h1 className="text-dark fw-bold ">Nuestro sistema</h1>
+                    </div>
+                </section>
+
             <section id="sistema" className="row align-items-center mx-3 mx-md-5 mb-5 p-4 p-md-5" style={{
                 backgroundSize: "cover",
                 minHeight: "500px",
@@ -19,12 +28,7 @@ const SistemaPagina = () => {
                     </p>
                 </div>
                 <div className="col-12 col-lg-6 text-center">
-                    <img
-                        src="https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770358243/MagicEraser_260125_114843_xcld4t.png"
-                        alt="Rifame Logo"
-                        className="img-fluid"
-                        style={{ filter: "drop-shadow(0px 10px 25px rgba(0, 0, 0, 0.25))", maxWidth: "300px", width: "100%" }}
-                    />
+                    
                 </div>
             </section>
 

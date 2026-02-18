@@ -196,7 +196,7 @@ const RegistrodeUsuario = () => {
                             required
                         />
                     </div>
-                    <div className="mb-3 form-check mt-3">
+                    <div className="my-3 form-check ps-0">
                         <input 
                             type="checkbox" 
                             id="terminos" 

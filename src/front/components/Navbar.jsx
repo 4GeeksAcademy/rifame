@@ -19,7 +19,7 @@ export const Navbar = () => {
 	return (
 		<nav className="navbar navbar-expand-lg bg-body-tertiary fixed-top shadow-sm">
 			<div className="container-fluid px-3 px-md-4">
-				<Link to="/" className="d-flex align-items-center text-decoration-none">
+				<Link to={store.user ? "/dashboard" : "/"} className="d-flex align-items-center text-decoration-none">
 					<img
 						src="https://res.cloudinary.com/dkkkjhhgl/image/upload/v1770357996/MagicEraser_260125_114439_dp3yik.png"
 						alt="Logo"

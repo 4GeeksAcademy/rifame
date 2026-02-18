@@ -439,6 +439,18 @@ def get_rifa_publica(rifa_id):
     rifa_data = rifa.serialize()
     return jsonify(rifa_data), 200
 
+@api.route('/rifa/<int:rifa_id>', methods=['GET'])
+@jwt_required()  # Proteger la ruta
+def get_rifa_detail(rifa_id): 
+    """Obtener detalles de una rifa específica"""
+    current_user_id = int(get_jwt_identity())  # Convertir a entero
+    rifa = Rifa.query.get(rifa_id)
+    if not rifa:
+        return jsonify({"message": "Rifa no encontrada"}), 404
+    if rifa.user_id != current_user_id:
+        return jsonify({"message": "No autorizado"}), 403
+    return jsonify(rifa.serialize()), 200
+
 
 # ==========================================
 # TICKETS
