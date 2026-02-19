@@ -75,7 +75,7 @@ const EditarRifa = () => {
                     fechaSorteo: rifa.fecha_sorteo
                         ? rifa.fecha_sorteo.slice(0, 16)
                         : "",
-                    metodoPagos: rifa.metodo_pagos ? rifa.metodo_pagos.split(",") : [],
+                    metodoPagos: rifa.metodo_pagos ? rifa.metodo_pagos.split(",").map(m => m.trim()) : [],
                     titularZelle: rifa.titular_zelle || "",
                     contactoZelle: rifa.contacto_zelle || "",
                     titularTransferencia: rifa.titular_transferencia || "",
@@ -102,15 +102,29 @@ const EditarRifa = () => {
     const handleMetodoPagoChange = (metodo) => {
         setFormData(prev => {
             const yaSeleccionado = prev.metodoPagos.includes(metodo);
+
+            let nuevosMetodos = yaSeleccionado
+                ? prev.metodoPagos.filter(m => m !== metodo)
+                : [...prev.metodoPagos, metodo];
+
             return {
                 ...prev,
-                metodoPagos: yaSeleccionado
-                    ? prev.metodoPagos.filter(m => m !== metodo)
-                    : [...prev.metodoPagos, metodo]
+                metodoPagos: nuevosMetodos,
+
+                // Limpiar datos si se desmarca
+                ...(metodo === "ZELLE" && yaSeleccionado ? {
+                    titularZelle: "",
+                    contactoZelle: ""
+                } : {}),
+
+                ...(metodo === "Transferencia-Bancaria" && yaSeleccionado ? {
+                    titularTransferencia: "",
+                    numeroRuta: "",
+                    numeroCuenta: ""
+                } : {})
             };
         });
     };
-
     const handleImageChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -179,6 +193,28 @@ const EditarRifa = () => {
             return;
         }
 
+        if (formData.metodoPagos.length === 0) {
+            setError("Debe seleccionar al menos un método de pago");
+            setLoading(false);
+            return;
+        }
+
+        if (formData.metodoPagos.includes("ZELLE")) {
+            if (!formData.titularZelle || !formData.contactoZelle) {
+                setError("Complete los datos de ZELLE");
+                setLoading(false);
+                return;
+            }
+        }
+
+        if (formData.metodoPagos.includes("Transferencia-Bancaria")) {
+            if (!formData.titularTransferencia || !formData.numeroRuta || !formData.numeroCuenta) {
+                setError("Complete los datos de Transferencia Bancaria");
+                setLoading(false);
+                return;
+            }
+        }
+
         try {
             const requestBody = {
                 titulo: formData.tituloRifa,
@@ -226,135 +262,187 @@ const EditarRifa = () => {
                 Editar Rifa
             </h1>
             <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-                <label className="form-label text-center d-block">
-                    Imagen del Premio
-                </label>
+                <div className="mb-3">
+                    <label className="form-label text-center d-block">
+                        Imagen del Premio
+                    </label>
 
-                {(imagePreview || imageUrl) && (
-                    <div className="mb-3 text-center">
-                        <img
-                            src={imagePreview || imageUrl}
-                            alt="Preview"
-                            className="img-fluid rounded border"
-                            style={{ maxWidth: "300px", maxHeight: "300px" }}
+                    {(imagePreview || imageUrl) && (
+                        <div className="mb-3 text-center">
+                            <img
+                                src={imagePreview || imageUrl}
+                                alt="Preview"
+                                className="img-fluid rounded border"
+                                style={{ maxWidth: "300px", maxHeight: "300px" }}
+                            />
+
+                            {uploading && (
+                                <div className="mt-2">
+                                    <div className="spinner-border spinner-border-sm text-danger me-2"></div>
+                                    <small>Subiendo imagen...</small>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    <input
+                        type="file"
+                        className="form-control"
+                        accept="image/jpeg,image/png,image/jpg,image/webp"
+                        onChange={handleImageChange}
+                        disabled={loading || uploading}
+                    />
+                </div>
+
+                <div className="mb-3">
+                    <label className="form-label">Título</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        name="tituloRifa"
+                        value={formData.tituloRifa}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="mb-3">
+                    <label className="form-label">Descripción</label>
+                    <textarea
+                        className="form-control"
+                        name="descripcionRifa"
+                        value={formData.descripcionRifa}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="mb-3">
+                    <label className="form-label">Precio Ticket</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        name="precioTicket"
+                        value={formData.precioTicket}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="mb-3">
+                    <label className="form-label">Cantidad Tickets</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        name="cantidadTickets"
+                        value={formData.cantidadTickets}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="mb-3">
+                    <label className="form-label">Lotería</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        name="loteria"
+                        value={formData.loteria}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="mb-3">
+                    <label className="form-label">Fecha Sorteo</label>
+                    <input
+                        type="datetime-local"
+                        className="form-control"
+                        name="fechaSorteo"
+                        value={formData.fechaSorteo}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="mb-3">
+                    <label className="form-label">Métodos de Pago</label>
+
+                    <div>
+                        <input
+                            type="checkbox"
+                            checked={formData.metodoPagos.includes("ZELLE")}
+                            onChange={() => handleMetodoPagoChange("ZELLE")}
+                        /> ZELLE
+                    </div>
+
+                    <div>
+                        <input
+                            type="checkbox"
+                            checked={formData.metodoPagos.includes("Transferencia-Bancaria")}
+                            onChange={() => handleMetodoPagoChange("Transferencia-Bancaria")}
+                        /> Transferencia Bancaria
+                    </div>
+                </div>
+
+                {formData.metodoPagos.includes("ZELLE") && (
+                    <div className="border p-3 mb-3 rounded bg-light">
+                        <h6>Información ZELLE</h6>
+
+                        <input
+                            type="text"
+                            className="form-control mb-2"
+                            placeholder="Titular Zelle"
+                            name="titularZelle"
+                            value={formData.titularZelle}
+                            onChange={handleChange}
                         />
 
-                        {uploading && (
-                            <div className="mt-2">
-                                <div className="spinner-border spinner-border-sm text-danger me-2"></div>
-                                <small>Subiendo imagen...</small>
-                            </div>
-                        )}
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Correo o Teléfono"
+                            name="contactoZelle"
+                            value={formData.contactoZelle}
+                            onChange={handleChange}
+                        />
                     </div>
                 )}
 
-                <input
-                    type="file"
-                    className="form-control"
-                    accept="image/jpeg,image/png,image/jpg,image/webp"
-                    onChange={handleImageChange}
-                    disabled={loading || uploading}
-                />
-            </div>
+                {formData.metodoPagos.includes("Transferencia-Bancaria") && (
+                    <div className="border p-3 mb-3 rounded bg-light">
+                        <h6>Información Transferencia</h6>
 
-            <div className="mb-3">
-                <label className="form-label">Título</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="tituloRifa"
-                    value={formData.tituloRifa}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <div className="mb-3">
-                <label className="form-label">Descripción</label>
-                <textarea
-                    className="form-control"
-                    name="descripcionRifa"
-                    value={formData.descripcionRifa}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <div className="mb-3">
-                <label className="form-label">Precio Ticket</label>
-                <input
-                    type="number"
-                    className="form-control"
-                    name="precioTicket"
-                    value={formData.precioTicket}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <div className="mb-3">
-                <label className="form-label">Cantidad Tickets</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="cantidadTickets"
-                    value={formData.cantidadTickets}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <div className="mb-3">
-                <label className="form-label">Lotería</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    name="loteria"
-                    value={formData.loteria}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <div className="mb-3">
-                <label className="form-label">Fecha Sorteo</label>
-                <input
-                    type="datetime-local"
-                    className="form-control"
-                    name="fechaSorteo"
-                    value={formData.fechaSorteo}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <div className="mb-3">
-                <label className="form-label">Metodos de Pago</label>
-                <div className="form-check">
-                    <input
-                        type="checkbox"
-                        className="form-check-input"
-                        checked={formData.metodoPagos.includes("ZELLE")}
-                        onChange={() => handleMetodoPagoChange("ZELLE")}
-                    />
-                    <label className="form-check-label">
-                        ZELLE
-                    </label>
-                </div>
+                        <input
+                            type="text"
+                            className="form-control mb-2"
+                            placeholder="Titular"
+                            name="titularTransferencia"
+                            value={formData.titularTransferencia}
+                            onChange={handleChange}
+                        />
 
-                <div className="form-check">
-                    <input
-                        type="checkbox"
-                        className="form-check-input"
-                        checked={formData.metodoPagos.includes("Transferencia-Bancaria")}
-                        onChange={() => handleMetodoPagoChange("Transferencia-Bancaria")}
-                    />
-                    <label className="form-check-label" htmlFor="transferencia-bancaria">Transferencia Bancaria</label>
-                </div>
-            </div>
-            <button
-                type="submit"
-                className="btn btn-danger w-100"
-                disabled={loading}
-            >
-                {loading ? "Actualizando..." : "Guardar Cambios"}
-            </button>
-        </form>
+                        <input
+                            type="text"
+                            className="form-control mb-2"
+                            placeholder="Número de Ruta"
+                            name="numeroRuta"
+                            value={formData.numeroRuta}
+                            onChange={handleChange}
+                        />
+
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Número de Cuenta"
+                            name="numeroCuenta"
+                            value={formData.numeroCuenta}
+                            onChange={handleChange}
+                        />
+                    </div>
+                )}
+                <button
+                    type="submit"
+                    className="btn btn-danger w-100"
+                    disabled={loading}
+                >
+                    {loading ? "Actualizando..." : "Guardar Cambios"}
+                </button>
+            </form>
         </div >
     );
 };
