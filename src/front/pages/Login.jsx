@@ -76,7 +76,6 @@ export const Login = () => {
         const result = await login(dispatch, formData.email, formData.contrasena);
 
         if (result.success) {
-            console.log("Login exitoso");
             navigate("/dashboard");
         } else {
             setError(result.message);
